@@ -6,15 +6,15 @@
       crossorigin="anonymous"></script>
 </head>
 
-<div id="pic" />
+<div>
+  <button onclick="refreshPic()" >Refresh pic</button>
+</div>
+<div>
+  <img id="pic" width="640" height="480" src="http://treats:8080/api/snap" />
+</div>
 
 <script language="JavaScript" >
-var img = $("<img />").attr('src', 'http://treats:8080/api/snap/')
-    .on('load', function() {
-        if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0) {
-            alert('broken image!');
-        } else {
-            document.getElementById("pic").append(img);
-        }
-    });
+  refreshPic = function() {
+    $("#pic").attr("src","http://treats:8080/api/snap");
+  }
 </script>
