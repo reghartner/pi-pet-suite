@@ -15,6 +15,6 @@
 
 <script language="JavaScript" >
   refreshPic = function() {
-    $("#pic").attr("src","http://treats:8080/api/snap");
+    $("#pic").attr("src","http://treats:8080/api/snap?" + new Date().getTime());
   }
 </script>
