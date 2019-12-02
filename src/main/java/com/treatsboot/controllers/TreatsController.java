@@ -35,16 +35,40 @@ public class TreatsController
         this.rewardService = rewardService;
     }
 
+    @ApiOperation(value = "Snap a picture and return as an attachment")
+    @RequestMapping(
+        produces= MediaType.IMAGE_JPEG_VALUE,
+        value = "/snapDownload",
+        method = RequestMethod.GET)
+    public HttpEntity<byte[]> snapDownload(HttpServletResponse response) throws Exception
+    {
+        byte[] picBytes = cameraService.snap();
+        response.setHeader("Content-Disposition", "attachment; filename=test.jpg");
+
+        return new HttpEntity<>(picBytes);
+    }
+
+    @ApiOperation(value = "Dispense some treats and take a picture returned as an attachment")
+    @RequestMapping(
+        produces= MediaType.IMAGE_JPEG_VALUE,
+        value = "/treatPicDownload",
+        method = RequestMethod.GET)
+    public HttpEntity<byte[]> treatPicDownload(HttpServletResponse response) throws Exception
+    {
+        byte[] picBytes = rewardService.dispenseAndSnap();
+        response.setHeader("Content-Disposition", "attachment; filename=test.jpg");
+
+        return new HttpEntity<>(picBytes);
+    }
+
     @ApiOperation(value = "Snap a picture")
     @RequestMapping(
         produces= MediaType.IMAGE_JPEG_VALUE,
         value = "/snap",
         method = RequestMethod.GET)
-    public HttpEntity<byte[]> snap(HttpServletResponse response) throws Exception
+    public HttpEntity<byte[]> snap() throws Exception
     {
         byte[] picBytes = cameraService.snap();
-        response.setHeader("Content-Disposition", "attachment; filename=test.jpg");
-
         return new HttpEntity<>(picBytes);
     }
 
@@ -53,11 +77,9 @@ public class TreatsController
         produces= MediaType.IMAGE_JPEG_VALUE,
         value = "/treatPic",
         method = RequestMethod.GET)
-    public HttpEntity<byte[]> treatPic(HttpServletResponse response) throws Exception
+    public HttpEntity<byte[]> treatPic() throws Exception
     {
         byte[] picBytes = rewardService.dispenseAndSnap();
-        response.setHeader("Content-Disposition", "attachment; filename=test.jpg");
-
         return new HttpEntity<>(picBytes);
     }
 

@@ -1,1 +1,20 @@
-Hello World
+
+<head>
+  <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
+</head>
+
+<div id="pic" />
+
+<script language="JavaScript" >
+var img = $("<img />").attr('src', 'http://treats:8080/api/snap/')
+    .on('load', function() {
+        if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0) {
+            alert('broken image!');
+        } else {
+            document.getElementById("pic").append(img);
+        }
+    });
+</script>
