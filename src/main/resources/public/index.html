@@ -1,5 +1,4 @@
-
-<head>
+<head xmlns="http://www.w3.org/1999/html">
   <script
       src="https://code.jquery.com/jquery-3.4.1.min.js"
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
@@ -8,13 +7,29 @@
 
 <div>
   <button onclick="refreshPic()" >Refresh pic</button>
+  <a id="loading" ></a>
 </div>
 <div>
   <img id="pic" width="640" height="480" src="http://treats:8080/api/snap" />
 </div>
 
+<div>
+  <button onclick="rewardAfter()" >Set to Reward After Minutes</button>
+  <input name="rewardAfterMinutes" value="5" />
+</div>
+
 <script language="JavaScript" >
   refreshPic = function() {
+    $("#loading").text("Refreshing Image...");
     $("#pic").attr("src","http://treats:8080/api/snap?" + new Date().getTime());
+  }
+
+  pic.onload = function () {
+    $("#loading").text("");
+  }
+
+  rewardAfter = function() {
+    var minutes = document.getElementsByName("rewardAfterMinutes").value;
+    console.log(minutes);
   }
 </script>
