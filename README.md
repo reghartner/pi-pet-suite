@@ -1,5 +1,7 @@
-# Treat Dispenser!
+# Harley's Treat Dispenser
 Spring Boot application with a (super) simple UI designed for a Raspberry Pi controlled Treat Dispenser.
+
+[See it in action!](https://youtu.be/VM61f9kIBaY)
 
 API allows for:
 * Taking a picture via the pi camera
