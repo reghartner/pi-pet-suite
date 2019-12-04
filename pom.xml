@@ -12,7 +12,7 @@
     <artifactId>treatsboot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>treatsboot</name>
-    <description>Generates and stores VAT Invoice emails</description>
+    <description>Software controller for an automated treat dispenser</description>
 
     <properties>
         <java.version>11</java.version>
