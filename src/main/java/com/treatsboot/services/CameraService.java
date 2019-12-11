@@ -62,12 +62,13 @@ public class CameraService
             // between frames, which loops continuously
             GifSequenceWriter writer = new GifSequenceWriter(output, 1, msBetweenFrames, true);
 
-            for (int i = 0; i < numFrames; i++)
+            for (int i = 0; i < 50; i++)
             {
                 camera.takePicture(handler);
                 InputStream in = new ByteArrayInputStream(handler.result());
                 BufferedImage bImageFromConvert = ImageIO.read(in);
                 writer.writeToSequence(bImageFromConvert);
+                Thread.sleep(100);
             }
 
             byte[] gifBytes = gifByteStream.toByteArray();
