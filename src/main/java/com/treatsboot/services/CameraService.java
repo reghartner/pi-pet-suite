@@ -10,9 +10,7 @@ import uk.co.caprica.picam.enums.Encoding;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.io.*;
 
 import static uk.co.caprica.picam.CameraConfiguration.cameraConfiguration;
 
@@ -73,6 +71,17 @@ public class CameraService
             }
 
             imageOutputStream.seek(0);
+            while (true) {
+                try {
+                    gifByteStream.write(imageOutputStream.readByte());
+                } catch (EOFException e) {
+                    System.out.println("End of Image Stream");
+                    break;
+                } catch (IOException e) {
+                    System.out.println("Error processing the Image Stream");
+                    break;
+                }
+            }
             byte[] gifBytes = gifByteStream.toByteArray();
 
             writer.close();
