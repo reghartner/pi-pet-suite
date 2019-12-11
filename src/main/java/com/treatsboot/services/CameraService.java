@@ -76,7 +76,7 @@ public class CameraService
             }
 
             byte[] gifBytes = gifByteStream.toByteArray();
-            System.out.println("gifBytes: " + gifBytes);
+            System.out.println("gifBytes: " + gifBytes.length);
 
             writer.close();
             gifByteStream.close();
