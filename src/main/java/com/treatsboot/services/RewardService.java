@@ -3,6 +3,9 @@ package com.treatsboot.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
+import static com.treatsboot.utilities.DurationHelpers.getPrettyDuration;
 import static java.lang.String.format;
 
 @Service
@@ -27,10 +30,21 @@ public class RewardService
      */
     public void rewardForSilence(double minutes, boolean smallTreat) throws InterruptedException
     {
-        System.out.println("Will reward Harley after he's silent for " + minutes + " minutes.");
-        mic.returnAfterMinutesOfSilence(minutes);
+        System.out.println(format(
+            "Will reward Harley with a % treat after he's silent for %s minutes.",
+            minutes,
+            smallTreat ? "small" : "big"));
 
-        System.out.println("He made it.  Treats coming!");
+        long startTime = new Date().getTime();
+        mic.returnAfterMinutesOfSilence(minutes);
+        long endTime = new Date().getTime();
+
+        System.out.println(format(
+            "He made it.  It took him %s until he was silent for %s minutes. % treat coming!",
+            getPrettyDuration(endTime-startTime),
+            minutes,
+            smallTreat ? "Small" : "Big"));
+
         if (smallTreat)
         {
             treats.smallTreat();

@@ -72,6 +72,17 @@ public class TreatsController
         return new HttpEntity<>(picBytes);
     }
 
+    @ApiOperation(value = "Get a quick video")
+    @RequestMapping(
+        produces= MediaType.IMAGE_GIF_VALUE,
+        value = "/gif",
+        method = RequestMethod.GET)
+    public HttpEntity<byte[]> gif() throws Exception
+    {
+        byte[] picBytes = cameraService.getGif(3);
+        return new HttpEntity<>(picBytes);
+    }
+
     @ApiOperation(value = "Dispense some treats and take a picture")
     @RequestMapping(
         produces= MediaType.IMAGE_JPEG_VALUE,
