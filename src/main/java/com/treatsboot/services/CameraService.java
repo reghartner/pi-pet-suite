@@ -56,7 +56,7 @@ public class CameraService
         {
             // let the camera warm up
             Thread.sleep(2000);
-            
+
             ByteArrayOutputStream gifByteStream = new ByteArrayOutputStream();
             ImageOutputStream output = ImageIO.createImageOutputStream(gifByteStream);
 
@@ -64,15 +64,19 @@ public class CameraService
             // between frames, which loops continuously
             GifSequenceWriter writer = new GifSequenceWriter(output, 1, msBetweenFrames, true);
 
-            for (int i = 0; i < numFrames; i++)
+            for (int i = 0; i < 1; i++)
             {
                 camera.takePicture(handler);
+                System.out.println("handler result: " + handler.result());
                 InputStream in = new ByteArrayInputStream(handler.result());
                 BufferedImage bImageFromConvert = ImageIO.read(in);
+
+                System.out.println("bimage: " + bImageFromConvert.toString());
                 writer.writeToSequence(bImageFromConvert);
             }
 
             byte[] gifBytes = gifByteStream.toByteArray();
+            System.out.println("gifBytes: " + gifBytes);
 
             writer.close();
             gifByteStream.close();
