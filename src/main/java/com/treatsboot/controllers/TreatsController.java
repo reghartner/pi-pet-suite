@@ -79,7 +79,7 @@ public class TreatsController
         method = RequestMethod.GET)
     public HttpEntity<byte[]> gif() throws Exception
     {
-        byte[] picBytes = cameraService.getGif(3);
+        byte[] picBytes = cameraService.getGif();
         return new HttpEntity<>(picBytes);
     }
 
