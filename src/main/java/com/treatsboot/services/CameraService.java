@@ -62,7 +62,7 @@ public class CameraService
 
             // create a gif sequence with the type of the first image, 1 second
             // between frames, which loops continuously
-            GifSequenceWriter writer = new GifSequenceWriter(output, 1, msBetweenFrames, true);
+            GifSequenceWriter writer = new GifSequenceWriter(output, 5, msBetweenFrames, true);
 
             for (int i = 0; i < 1; i++)
             {
