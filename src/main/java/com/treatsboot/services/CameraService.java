@@ -40,8 +40,8 @@ public class CameraService
 
     public byte[] getGif() throws Exception
     {
-        int msBetweenFrames = 500;
-        int numFrames = 25;
+        int msBetweenFrames = 200;
+        int numFrames = 50;
 
         CameraConfiguration config = cameraConfiguration()
             .width(600)
