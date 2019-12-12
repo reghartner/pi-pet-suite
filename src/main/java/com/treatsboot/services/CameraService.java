@@ -38,7 +38,8 @@ public class CameraService
 
     public byte[] getGif() throws Exception
     {
-        int msBetweenFrames = 100;
+        int msBetweenFrames = 500;
+        int numFrames = 50;
 
         CameraConfiguration config = cameraConfiguration()
             .width(600)
@@ -61,7 +62,7 @@ public class CameraService
             // between frames, which loops continuously
             GifSequenceWriter writer = new GifSequenceWriter(imageOutputStream, 5, msBetweenFrames, true);
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < numFrames; i++)
             {
                 camera.takePicture(handler);
                 InputStream in = new ByteArrayInputStream(handler.result());

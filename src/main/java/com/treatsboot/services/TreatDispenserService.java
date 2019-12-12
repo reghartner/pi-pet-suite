@@ -130,14 +130,16 @@ public class TreatDispenserService
      * of the motor is 0.09 degrees in half step method.
      */
     @Async
-    public void treat()
+    public void treat(boolean smallTreat)
     {
-        dispense(DEFAULT_ROTATION_DEGREES);
-    }
-
-    public void smallTreat()
-    {
-        dispense(SMALL_ROTATION_TREATS);
+        if (smallTreat)
+        {
+            dispense(DEFAULT_ROTATION_DEGREES);
+        }
+        else
+        {
+            dispense(SMALL_ROTATION_TREATS);
+        }
     }
 
     private void dispense(int degrees)

@@ -45,24 +45,26 @@ public class RewardService
             minutes,
             smallTreat ? "Small" : "Big"));
 
-        if (smallTreat)
-        {
-            treats.smallTreat();
-        }
-        else
-        {
-            treats.treat();
-        }
+        treats.treat(smallTreat);
     }
 
     /**
      * Starts Dispensing Treats, takes a picture while they are coming out and returns the picture
      */
-    public byte[] dispenseAndSnap() throws Exception
+    public byte[] dispenseAndSnap(boolean smallTreat) throws Exception
     {
-        treats.treat();
+        treats.treat(smallTreat);
         Thread.sleep(500);
         return camera.snap();
+    }
+
+    /**
+     * Starts Dispensing Treats, takes a picture while they are coming out and returns the picture
+     */
+    public byte[] dispenseAndRecord(boolean smallTreat) throws Exception
+    {
+        treats.treat(smallTreat);
+        return camera.getGif();
     }
 
     /**
