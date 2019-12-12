@@ -41,10 +41,10 @@ public class CameraService
         int msBetweenFrames = 100;
 
         CameraConfiguration config = cameraConfiguration()
-            .width(1024)
-            .height(768)
+            .width(600)
+            .height(400)
             .encoding(Encoding.JPEG)
-            .quality(90)
+            .quality(50)
             .rotation(90);
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
