@@ -46,7 +46,7 @@ public class MediaRepository
         }
         else if(futureFilenames.contains(filename))
         {
-            throw new MediaNotYetAvailableException(format("%s is not yet available.  Try again soon"));
+            throw new MediaNotYetAvailableException(format("%s is not yet available.  Try again soon", filename));
         }
 
         throw new GTFOException("Do not request files that don't exist!");

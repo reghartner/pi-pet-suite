@@ -46,7 +46,6 @@ public class TreatsController
 
     @ApiOperation(value = "Takes a picture and returns it to the browser as a JPEG")
     @RequestMapping(
-        produces = MediaType.IMAGE_JPEG_VALUE,
         value = "/snapAndReturn",
         method = RequestMethod.GET)
     public HttpEntity<byte[]> snap() throws Exception
@@ -79,7 +78,6 @@ public class TreatsController
 
     @ApiOperation(value = "Dispense some treats and take a picture.  Returns the picture to the browser as a JPEG")
     @RequestMapping(
-        produces = MediaType.IMAGE_GIF_VALUE,
         value = "/treatPic",
         method = RequestMethod.GET)
     public HttpEntity<byte[]> treatPic(
@@ -128,7 +126,6 @@ public class TreatsController
 
     @ApiOperation(value = "Get an archived GIF")
     @RequestMapping(
-        produces = MediaType.IMAGE_GIF_VALUE,
         value = "/gifArchive/{filename}",
         method = RequestMethod.GET)
     public HttpEntity<byte[]> getMedia(@PathVariable String filename) throws Exception
