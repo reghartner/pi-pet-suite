@@ -118,12 +118,12 @@ public class TreatsController
         return HttpStatus.OK;
     }
 
-    @ApiOperation(value = "Dispense some treats and take a picture.  Returns the picture to the browser as a JPEG")
+    @ApiOperation(value = "Get an archived GIF")
     @RequestMapping(
         produces= MediaType.IMAGE_GIF_VALUE,
         value = "/gifArchive/{filename}",
         method = RequestMethod.GET)
-    public HttpEntity<byte[]> getMedia(String filename) throws Exception
+    public HttpEntity<byte[]> getMedia(@PathVariable String filename) throws Exception
     {
         return new HttpEntity<>(mediaRepository.getMedia(filename));
     }
