@@ -1,6 +1,9 @@
 package com.treatsboot.services;
 
+import com.treatsboot.repositories.MediaRepository;
 import com.treatsboot.utilities.GifSequenceWriter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.co.caprica.picam.ByteArrayPictureCaptureHandler;
 import uk.co.caprica.picam.Camera;
@@ -8,6 +11,7 @@ import uk.co.caprica.picam.CameraConfiguration;
 import uk.co.caprica.picam.enums.Encoding;
 
 import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -19,7 +23,20 @@ import static uk.co.caprica.picam.CameraConfiguration.cameraConfiguration;
 @Service
 public class CameraService
 {
-    public byte[] snap() throws Exception
+    private MediaRepository mediaRepository;
+
+    @Autowired
+    public CameraService(MediaRepository mediaRepository)
+    {
+        this.mediaRepository = mediaRepository;
+    }
+
+    public byte[] snapAndReturn() throws Exception
+    {
+        return snap();
+    }
+
+    private byte[] snap() throws Exception
     {
         CameraConfiguration config = cameraConfiguration()
             .width(1024)
@@ -38,15 +55,22 @@ public class CameraService
         }
     }
 
-    public byte[] getGif() throws Exception
+    /**
+     * record a gif and save it
+     * @return
+     * @throws Exception
+     */
+    @Async
+    public void recordAndSaveGif(String filename) throws Exception
     {
+        mediaRepository.registerFilename(filename);
         int msBetweenFrames = 200;
         int numFrames = 50;
 
         CameraConfiguration config = cameraConfiguration()
             .width(600)
             .height(400)
-            .encoding(Encoding.JPEG)
+            .encoding(Encoding.GIF)
             .quality(50)
             .rotation(90);
 
@@ -58,10 +82,9 @@ public class CameraService
             Thread.sleep(2000);
 
             ByteArrayOutputStream gifByteStream = new ByteArrayOutputStream();
-            ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(gifByteStream);
+            ImageOutputStream imageOutputStream = //ImageIO.createImageOutputStream(gifByteStream);
+                new FileImageOutputStream(new File(filename));
 
-            // create a gif sequence with the type of the first image, 1 second
-            // between frames, which loops continuously
             GifSequenceWriter writer = new GifSequenceWriter(imageOutputStream, 5, msBetweenFrames, true);
 
             List<byte[]> imageBytesList = new ArrayList<>();
@@ -93,13 +116,12 @@ public class CameraService
                     break;
                 }
             }
-            byte[] gifBytes = gifByteStream.toByteArray();
 
             writer.close();
             gifByteStream.close();
             imageOutputStream.close();
 
-            return gifBytes;
+            mediaRepository.fileWritten(filename);
         }
     }
 }

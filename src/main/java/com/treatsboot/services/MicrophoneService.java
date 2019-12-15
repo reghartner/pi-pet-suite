@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
 
 import static com.treatsboot.utilities.DurationHelpers.getPrettyDuration;
@@ -45,7 +47,7 @@ public class MicrophoneService implements LineListener {
 
     }
 
-    public void returnAfterMinutesOfSilence(double minutes) throws InterruptedException
+    public void callbackAfterNMinutesOfSilence(double minutes, Method callback) throws InterruptedException, InvocationTargetException, IllegalAccessException
     {
         int milliseconds = (int)(minutes * 60 * 1000);
         resetTimer(milliseconds, false);
@@ -58,7 +60,7 @@ public class MicrophoneService implements LineListener {
             {
                 microphone.stop();
                 microphone.close();
-                return;
+                callback.invoke(null);
             }
             else
             {
@@ -78,7 +80,6 @@ public class MicrophoneService implements LineListener {
                     e.printStackTrace();
                 }
             }
-
         }
     }
 
