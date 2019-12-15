@@ -58,7 +58,7 @@ public class MediaRepository
     {
         if (this.LazyFilenames().contains(filename))
         {
-            BufferedImage image = ImageIO.read(new File(mediaFolder + filename));
+            BufferedImage image = ImageIO.read(new File(mediaFolder + "/" + filename));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(image, "gif", baos);
             baos.flush();
@@ -82,10 +82,10 @@ public class MediaRepository
     public String registerFilename(String filename)
     {
         this.futureFilenames.add(filename);
-        return mediaFolder + filename;
+        return mediaFolder + "/" + filename;
     }
 
-    public void fileWritten(String filename) throws IOException
+    public void fileWritten(String filename)
     {
         this.futureFilenames.remove(filename);
         this.filenames.add(filename);
