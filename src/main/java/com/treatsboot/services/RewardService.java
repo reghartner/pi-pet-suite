@@ -31,7 +31,7 @@ public class RewardService
     public void rewardForSilence(double minutes, boolean smallTreat) throws InterruptedException
     {
         System.out.println(format(
-            "Will reward Harley with a % treat after he's silent for %s minutes.",
+            "Will reward Harley with a %s treat after he's silent for %s minutes.",
             minutes,
             smallTreat ? "small" : "big"));
 
