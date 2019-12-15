@@ -57,7 +57,6 @@ public class TreatsController
 
     @ApiOperation(value = "Asynchronously records a GIF and returns the filename for retrieval")
     @RequestMapping(
-        produces = MediaType.IMAGE_GIF_VALUE,
         value = "/gif",
         method = RequestMethod.GET)
     public HttpEntity<String> gif() throws Exception
@@ -69,7 +68,6 @@ public class TreatsController
 
     @ApiOperation(value = "Asynchronously dispense treats and records a GIF.  Returns the filename for retrieval")
     @RequestMapping(
-        produces = MediaType.IMAGE_GIF_VALUE,
         value = "/treatGif",
         method = RequestMethod.GET)
     public HttpEntity<String> treatGif(
@@ -94,7 +92,9 @@ public class TreatsController
     @ApiOperation(value =
         "Reward with some treats after some minutes of silence.  Records a short gif when dispensing.  "
             + "Returns the name of the file that will be generated for retrieval")
-    @RequestMapping(value = "/rewardForSilence/{minutes}", method = RequestMethod.POST)
+    @RequestMapping(
+        value = "/rewardForSilence/{minutes}",
+        method = RequestMethod.POST)
     public HttpEntity<String> rewardForSilence(
         @PathVariable double minutes,
         @RequestParam(required = false, defaultValue = "false") boolean smallTreat)
@@ -105,7 +105,9 @@ public class TreatsController
     }
 
     @ApiOperation(value = "Reward with some treats after some minutes of silence.  Repeats until a max time.  Will record GIFs")
-    @RequestMapping(value = "/rewardForSilenceOverTime/{minutes}/{totalMinutes}", method = RequestMethod.POST)
+    @RequestMapping(
+        value = "/rewardForSilenceOverTime/{minutes}/{totalMinutes}",
+        method = RequestMethod.POST)
     public HttpStatus rewardForSilenceOverTime(
         @PathVariable double minutes,
         @PathVariable double totalMinutes) throws Exception
@@ -115,9 +117,10 @@ public class TreatsController
     }
 
     @ApiOperation(value = "Dispense some treats")
-    @RequestMapping(value = "/treat", method = RequestMethod.PUT)
-    public HttpStatus dispense(
-        @RequestParam(required = false, defaultValue = "false") boolean smallTreat)
+    @RequestMapping(
+        value = "/treat",
+        method = RequestMethod.PUT)
+    public HttpStatus dispense(@RequestParam(required = false, defaultValue = "false") boolean smallTreat)
     {
         treatDispenserService.treat(smallTreat);
         return HttpStatus.OK;
