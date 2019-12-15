@@ -132,4 +132,14 @@ public class TreatsController
     {
         return new HttpEntity<>(mediaRepository.getMedia(filename));
     }
+
+    @ApiOperation(value = "Get the latest archived GIF")
+    @RequestMapping(
+        value = "/gifArchive/latest",
+        method = RequestMethod.GET,
+        produces = MediaType.IMAGE_GIF_VALUE)
+    public HttpEntity<byte[]> getMedia() throws Exception
+    {
+        return new HttpEntity<>(mediaRepository.getLatestMedia());
+    }
 }

@@ -1,7 +1,5 @@
 package com.treatsboot.repositories;
 
-import com.google.common.collect.Sets;
-import com.google.common.io.Files;
 import com.treatsboot.exceptions.GTFOException;
 import com.treatsboot.exceptions.MediaNotYetAvailableException;
 import org.springframework.stereotype.Repository;
@@ -9,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,18 +15,39 @@ import static java.lang.String.format;
 @Repository
 public class MediaRepository
 {
-    private Set<String> filenames;
+    private Set<String> filenames = new HashSet<>();
     private Set<String> futureFilenames = new HashSet<>();
 
-    private final String mediaFolder = "/media/";
-    private final String indexFile = mediaFolder + "filenames.txt";
+    private final String mediaFolder = "/media";
 
-    public MediaRepository() throws IOException
+    public MediaRepository()
     {
-        File indexFile = new File(this.indexFile);
-        indexFile.createNewFile(); // if file already exists will do nothing
+        System.out.println("Initializing existing filenames");
+        File folder = new File(mediaFolder);
+        File[] listOfFiles = folder.listFiles();
 
-        filenames = Sets.newHashSet(Files.readLines(indexFile, Charset.defaultCharset()));
+        for (int i = 0; i < listOfFiles.length; i++) {
+            filenames.add(listOfFiles[i].getName());
+        }
+    }
+
+    public byte[] getLatestMedia() throws IOException
+    {
+        File fl = new File(mediaFolder);
+        File[] files = fl.listFiles(new FileFilter() {
+            public boolean accept(File file) {
+                return file.isFile();
+            }
+        });
+        long lastMod = Long.MIN_VALUE;
+        File choice = null;
+        for (File file : files) {
+            if (file.lastModified() > lastMod) {
+                choice = file;
+                lastMod = file.lastModified();
+            }
+        }
+        return getMedia(choice.getName());
     }
 
     public byte[] getMedia(String filename) throws IOException
@@ -63,8 +81,5 @@ public class MediaRepository
     {
         this.futureFilenames.remove(filename);
         this.filenames.add(filename);
-        Writer output = new BufferedWriter(new FileWriter(indexFile, true));
-        output.append(filename);
-        output.close();
     }
 }
