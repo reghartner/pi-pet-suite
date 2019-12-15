@@ -2,6 +2,7 @@ package com.treatsboot.repositories;
 
 import com.treatsboot.exceptions.GTFOException;
 import com.treatsboot.exceptions.MediaNotYetAvailableException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.imageio.ImageIO;
@@ -20,6 +21,7 @@ public class MediaRepository
 
     private final String mediaFolder = "/media";
 
+    @Autowired
     public MediaRepository()
     {
         System.out.println("Initializing existing filenames");
