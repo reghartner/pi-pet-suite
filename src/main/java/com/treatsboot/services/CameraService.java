@@ -63,7 +63,6 @@ public class CameraService
     @Async
     public void recordAndSaveGif(String filename) throws Exception
     {
-        String fullFilename = mediaRepository.registerFilename(filename);
         int msBetweenFrames = 200;
         int numFrames = 50;
 
@@ -82,7 +81,8 @@ public class CameraService
             Thread.sleep(2000);
 
             ByteArrayOutputStream gifByteStream = new ByteArrayOutputStream();
-            ImageOutputStream imageOutputStream = new FileImageOutputStream(new File(fullFilename));
+            ImageOutputStream imageOutputStream = new FileImageOutputStream(
+                new File(mediaRepository.getFullFilename(filename)));
 
             GifSequenceWriter writer = new GifSequenceWriter(imageOutputStream, 5, msBetweenFrames, true);
 
@@ -119,8 +119,6 @@ public class CameraService
             writer.close();
             gifByteStream.close();
             imageOutputStream.close();
-
-            mediaRepository.fileWritten(filename);
         }
     }
 }
