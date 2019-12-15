@@ -11,7 +11,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -128,19 +127,19 @@ public class TreatsController
     @ApiOperation(value = "Get an archived GIF")
     @RequestMapping(
         value = "/gifArchive/{filename}",
-        method = RequestMethod.GET)
+        method = RequestMethod.GET,
+        produces = MediaType.IMAGE_GIF_VALUE)
     public HttpEntity<byte[]> getMedia(@PathVariable String filename) throws Exception
     {
-        byte[] imageBytes = mediaRepository.getMedia(filename);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_GIF_VALUE);
-        return new HttpEntity<>(imageBytes);
-    }
-
-    @ResponseBody
-    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
-    public String handleHttpMediaTypeNotAcceptableException()
-    {
-        return "acceptable MIME type:" + MediaType.IMAGE_GIF_VALUE;
+        try
+        {
+            return new HttpEntity<>(mediaRepository.getMedia(filename));
+        }
+        catch (Exception e)
+        {
+            HttpEntity<byte[]> response = new HttpEntity(new byte[0]);
+            response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_GIF_VALUE);
+            return new HttpEntity<>(new byte[0]);
+        }
     }
 }
