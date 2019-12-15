@@ -21,7 +21,7 @@ public class MediaRepository
     private Set<String> filenames;
     private Set<String> futureFilenames = new HashSet<>();
 
-    private final String mediaFolder = "media/";
+    private final String mediaFolder = "/media/";
     private final String indexFile = mediaFolder + "filenames.txt";
 
     public MediaRepository() throws IOException
