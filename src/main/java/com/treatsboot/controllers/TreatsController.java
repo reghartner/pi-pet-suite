@@ -8,7 +8,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -131,15 +130,6 @@ public class TreatsController
         produces = MediaType.IMAGE_GIF_VALUE)
     public HttpEntity<byte[]> getMedia(@PathVariable String filename) throws Exception
     {
-        try
-        {
-            return new HttpEntity<>(mediaRepository.getMedia(filename));
-        }
-        catch (Exception e)
-        {
-            HttpEntity<byte[]> response = new HttpEntity(new byte[0]);
-            response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_GIF_VALUE);
-            return new HttpEntity<>(new byte[0]);
-        }
+        return new HttpEntity<>(mediaRepository.getMedia(filename));
     }
 }
