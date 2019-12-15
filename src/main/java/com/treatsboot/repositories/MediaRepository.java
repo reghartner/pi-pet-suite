@@ -2,12 +2,13 @@ package com.treatsboot.repositories;
 
 import com.treatsboot.exceptions.GTFOException;
 import com.treatsboot.exceptions.MediaNotYetAvailableException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,21 +17,25 @@ import static java.lang.String.format;
 @Repository
 public class MediaRepository
 {
-    private Set<String> filenames = new HashSet<>();
+    private Set<String> filenames;
     private Set<String> futureFilenames = new HashSet<>();
 
     private final String mediaFolder = "/media";
 
-    @Autowired
-    public MediaRepository()
+    private Set<String> LazyFilenames()
     {
-        System.out.println("Initializing existing filenames");
-        File folder = new File(mediaFolder);
-        File[] listOfFiles = folder.listFiles();
+        if(filenames == null)
+        {
+            filenames = new HashSet<>();
+            System.out.println("Initializing existing filenames");
+            File folder = new File(mediaFolder);
+            File[] listOfFiles = folder.listFiles();
 
-        for (int i = 0; i < listOfFiles.length; i++) {
-            filenames.add(listOfFiles[i].getName());
+            for (int i = 0; i < listOfFiles.length; i++) {
+                filenames.add(listOfFiles[i].getName());
+            }
         }
+        return filenames;
     }
 
     public byte[] getLatestMedia() throws IOException
@@ -50,7 +55,7 @@ public class MediaRepository
 
     public byte[] getMedia(String filename) throws IOException
     {
-        if(filenames.contains(filename))
+        if(this.LazyFilenames().contains(filename))
         {
             BufferedImage image = ImageIO.read(new File(mediaFolder + filename));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
