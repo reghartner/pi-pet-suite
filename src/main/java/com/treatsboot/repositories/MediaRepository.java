@@ -34,20 +34,16 @@ public class MediaRepository
     public byte[] getLatestMedia() throws IOException
     {
         File fl = new File(mediaFolder);
-        File[] files = fl.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isFile();
-            }
-        });
+        File[] files = fl.listFiles(file -> file.isFile());
         long lastMod = Long.MIN_VALUE;
-        File choice = null;
+        File latest = null;
         for (File file : files) {
             if (file.lastModified() > lastMod) {
-                choice = file;
+                latest = file;
                 lastMod = file.lastModified();
             }
         }
-        return getMedia(choice.getName());
+        return getMedia(latest.getAbsolutePath());
     }
 
     public byte[] getMedia(String filename) throws IOException
