@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -45,7 +46,7 @@ public class TreatsController
 
     @ApiOperation(value = "Takes a picture and returns it to the browser as a JPEG")
     @RequestMapping(
-        produces= MediaType.IMAGE_JPEG_VALUE,
+        produces = MediaType.IMAGE_JPEG_VALUE,
         value = "/snapAndReturn",
         method = RequestMethod.GET)
     public HttpEntity<byte[]> snap() throws Exception
@@ -56,7 +57,7 @@ public class TreatsController
 
     @ApiOperation(value = "Asynchronously records a GIF and returns the filename for retrieval")
     @RequestMapping(
-        produces= MediaType.IMAGE_GIF_VALUE,
+        produces = MediaType.IMAGE_GIF_VALUE,
         value = "/gif",
         method = RequestMethod.GET)
     public HttpEntity<String> gif() throws Exception
@@ -68,10 +69,11 @@ public class TreatsController
 
     @ApiOperation(value = "Asynchronously dispense treats and records a GIF.  Returns the filename for retrieval")
     @RequestMapping(
-        produces= MediaType.IMAGE_GIF_VALUE,
+        produces = MediaType.IMAGE_GIF_VALUE,
         value = "/treatGif",
         method = RequestMethod.GET)
-    public HttpEntity<String> treatGif(@RequestParam(required = false, defaultValue = "false") boolean smallTreat) throws Exception
+    public HttpEntity<String> treatGif(
+        @RequestParam(required = false, defaultValue = "false") boolean smallTreat) throws Exception
     {
         String filename = rewardService.dispenseAndRecord(smallTreat);
         return new HttpEntity<>(filename);
@@ -79,17 +81,19 @@ public class TreatsController
 
     @ApiOperation(value = "Dispense some treats and take a picture.  Returns the picture to the browser as a JPEG")
     @RequestMapping(
-        produces= MediaType.IMAGE_GIF_VALUE,
+        produces = MediaType.IMAGE_GIF_VALUE,
         value = "/treatPic",
         method = RequestMethod.GET)
-    public HttpEntity<byte[]> treatPic(@RequestParam(required = false, defaultValue = "false") boolean smallTreat) throws Exception
+    public HttpEntity<byte[]> treatPic(
+        @RequestParam(required = false, defaultValue = "false") boolean smallTreat) throws Exception
     {
         byte[] picBytes = rewardService.dispenseAndSnap(smallTreat);
         return new HttpEntity<>(picBytes);
     }
 
-    @ApiOperation(value = "Reward with some treats after some minutes of silence.  Records a short gif when dispensing.  "
-        + "Returns the name of the file that will be generated for retrieval")
+    @ApiOperation(value =
+        "Reward with some treats after some minutes of silence.  Records a short gif when dispensing.  "
+            + "Returns the name of the file that will be generated for retrieval")
     @RequestMapping(value = "/rewardForSilence/{minutes}", method = RequestMethod.POST)
     public HttpEntity<String> rewardForSilence(
         @PathVariable double minutes,
@@ -112,7 +116,8 @@ public class TreatsController
 
     @ApiOperation(value = "Dispense some treats")
     @RequestMapping(value = "/treat", method = RequestMethod.PUT)
-    public HttpStatus dispense(@RequestParam(required = false, defaultValue = "false") boolean smallTreat)
+    public HttpStatus dispense(
+        @RequestParam(required = false, defaultValue = "false") boolean smallTreat)
     {
         treatDispenserService.treat(smallTreat);
         return HttpStatus.OK;
@@ -120,11 +125,18 @@ public class TreatsController
 
     @ApiOperation(value = "Get an archived GIF")
     @RequestMapping(
-        produces= MediaType.IMAGE_GIF_VALUE,
+        produces = MediaType.IMAGE_GIF_VALUE,
         value = "/gifArchive/{filename}",
         method = RequestMethod.GET)
     public HttpEntity<byte[]> getMedia(@PathVariable String filename) throws Exception
     {
         return new HttpEntity<>(mediaRepository.getMedia(filename));
+    }
+
+    @ResponseBody
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public String handleHttpMediaTypeNotAcceptableException()
+    {
+        return "acceptable MIME type:" + MediaType.IMAGE_GIF_VALUE;
     }
 }
