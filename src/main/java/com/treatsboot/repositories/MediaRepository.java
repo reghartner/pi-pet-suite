@@ -33,6 +33,7 @@ public class MediaRepository
 
             for (int i = 0; i < listOfFiles.length; i++) {
                 filenames.add(listOfFiles[i].getName());
+                System.out.println(format("adding file to list: %s", listOfFiles[i].getName()));
             }
         }
         return filenames;
@@ -50,28 +51,32 @@ public class MediaRepository
                 lastMod = file.lastModified();
             }
         }
-        return getMedia(latest.getAbsolutePath());
+        return getMedia(latest.getName());
     }
 
     public byte[] getMedia(String filename) throws IOException
     {
-        if(this.LazyFilenames().contains(filename))
+        if (this.LazyFilenames().contains(filename))
         {
             BufferedImage image = ImageIO.read(new File(mediaFolder + filename));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write( image, "gif", baos );
+            ImageIO.write(image, "gif", baos);
             baos.flush();
             byte[] imageBytes = baos.toByteArray();
             baos.close();
 
             return imageBytes;
         }
-        else if(futureFilenames.contains(filename))
+        else if (futureFilenames.contains(filename))
         {
-            throw new MediaNotYetAvailableException(format("%s is not yet available.  Try again soon", filename));
+            String message = format("%s is not yet available.  Try again soon", filename);
+            System.out.println(message);
+            throw new MediaNotYetAvailableException(message);
         }
 
-        throw new GTFOException("Do not request files that don't exist!");
+        String message = format("Don't request files that don't exist", filename);
+        System.out.println(message);
+        throw new GTFOException(message);
     }
 
     public String registerFilename(String filename)
