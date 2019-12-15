@@ -14,7 +14,7 @@ public class MediaRepository
     public byte[] getLatestMedia() throws IOException
     {
         File fl = new File("./media");
-        File[] files = fl.listFiles(file -> file.isFile());
+        File[] files = fl.listFiles(file -> file.isFile() && file.length() > 0);
         long lastMod = Long.MIN_VALUE;
         File latest = null;
         for (File file : files) {

@@ -43,10 +43,11 @@ public class TreatsController
         this.mediaRepository = mediaRepository;
     }
 
-    @ApiOperation(value = "Takes a picture and returns it to the browser as a JPEG")
+    @ApiOperation(value = "Takes a picture and returns it to the browser as a GIF")
     @RequestMapping(
         value = "/snapAndReturn",
-        method = RequestMethod.GET)
+        method = RequestMethod.GET,
+        produces = MediaType.IMAGE_GIF_VALUE)
     public HttpEntity<byte[]> snap() throws Exception
     {
         byte[] picBytes = cameraService.snapAndReturn();
