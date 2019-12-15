@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
@@ -130,7 +131,10 @@ public class TreatsController
         method = RequestMethod.GET)
     public HttpEntity<byte[]> getMedia(@PathVariable String filename) throws Exception
     {
-        return new HttpEntity<>(mediaRepository.getMedia(filename));
+        byte[] imageBytes = mediaRepository.getMedia(filename);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_GIF_VALUE);
+        return new HttpEntity<>(imageBytes);
     }
 
     @ResponseBody

@@ -21,11 +21,12 @@ public class MediaRepository
     private Set<String> filenames;
     private Set<String> futureFilenames = new HashSet<>();
 
-    private final String filenamesList = "filenames.txt";
+    private final String mediaFolder = "media/";
+    private final String indexFile = mediaFolder + "filenames.txt";
 
     public MediaRepository() throws IOException
     {
-        File indexFile = new File(filenamesList);
+        File indexFile = new File(this.indexFile);
         indexFile.createNewFile(); // if file already exists will do nothing
 
         filenames = Sets.newHashSet(Files.readLines(indexFile, Charset.defaultCharset()));
@@ -61,7 +62,8 @@ public class MediaRepository
     {
         this.futureFilenames.remove(filename);
         this.filenames.add(filename);
-        Writer output = new BufferedWriter(new FileWriter(filenamesList, true));
+        Writer output = new BufferedWriter(new FileWriter(indexFile, true));
         output.append(filename);
+        output.close();
     }
 }
