@@ -25,7 +25,10 @@ public class MediaRepository
 
     public MediaRepository() throws IOException
     {
-        filenames = Sets.newHashSet(Files.readLines(new File(filenamesList), Charset.defaultCharset()));
+        File indexFile = new File(filenamesList);
+        indexFile.createNewFile(); // if file already exists will do nothing
+
+        filenames = Sets.newHashSet(Files.readLines(indexFile, Charset.defaultCharset()));
     }
 
     public byte[] getMedia(String filename) throws IOException
