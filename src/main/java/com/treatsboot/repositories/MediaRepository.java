@@ -2,11 +2,7 @@ package com.treatsboot.repositories;
 
 import org.springframework.stereotype.Repository;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 @Repository
 public class MediaRepository
@@ -33,13 +29,30 @@ public class MediaRepository
 
     public byte[] getMedia(String filename) throws IOException
     {
-        BufferedImage image = ImageIO.read(new File(getFullFilename(filename)));
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "gif", baos);
-        baos.flush();
-        byte[] imageBytes = baos.toByteArray();
-        baos.close();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        InputStream in = new FileInputStream(new File(getFullFilename(filename)));
 
+        try
+        {
+            byte[] buffer = new byte[1024];
+            int count;
+
+            while ((count = in.read(buffer)) != -1)
+            {
+                outputStream.write(buffer, 0, count);
+            }
+
+            // Flush out stream, to write any remaining buffered data
+            outputStream.flush();
+        }
+        finally
+        {
+            in.close();
+        }
+
+        byte[] imageBytes = outputStream.toByteArray();
+        outputStream.flush();
+        outputStream.close();
         return imageBytes;
     }
 }
