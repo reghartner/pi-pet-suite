@@ -94,6 +94,14 @@ public class RewardService
         return filename;
     }
 
+    /**
+     * Kill any existing mic listeners
+     */
+    public void kill()
+    {
+        mic.kill();
+    }
+
     private String getGifName()
     {
         return format("%s.gif", Date.from(Instant.now()));

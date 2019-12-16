@@ -47,6 +47,12 @@ public class MicrophoneService implements LineListener {
 
     }
 
+    private boolean kill = false;
+    public void kill()
+    {
+        kill = true;
+    }
+
     public void callbackAfterNMinutesOfSilence(double minutes, Method callback) throws InterruptedException, InvocationTargetException, IllegalAccessException
     {
         int milliseconds = (int)(minutes * 60 * 1000);
@@ -54,7 +60,7 @@ public class MicrophoneService implements LineListener {
 
         microphone.open(this);
         MicrophoneInputStream inputStream = microphone.start();
-        while(true)
+        while(!kill)
         {
             if (new Date().getTime() > endTime)
             {
@@ -81,6 +87,8 @@ public class MicrophoneService implements LineListener {
                 }
             }
         }
+
+        kill = false;
     }
 
     @Override
