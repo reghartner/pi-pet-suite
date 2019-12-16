@@ -43,6 +43,17 @@ public class GifController
         return new HttpEntity<>(picBytes);
     }
 
+    @ApiOperation(value = "Takes a picture and returns it to the browser as a GIF")
+    @RequestMapping(
+        value = "/gif",
+        method = RequestMethod.GET,
+        produces = MediaType.IMAGE_GIF_VALUE)
+    public HttpEntity<byte[]> gif() throws Exception
+    {
+        byte[] picBytes = cameraService.getGif();
+        return new HttpEntity<>(picBytes);
+    }
+
     @ApiOperation(value = "Asynchronously records a GIF and returns the filename for retrieval")
     @RequestMapping(
         value = "/recordGif",

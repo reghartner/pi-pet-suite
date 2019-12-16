@@ -121,4 +121,70 @@ public class CameraService
             imageOutputStream.close();
         }
     }
+
+    public byte[] getGif() throws Exception
+    {
+        int msBetweenFrames = 200;
+        int numFrames = 50;
+
+        CameraConfiguration config = cameraConfiguration()
+            .width(600)
+            .height(400)
+            .encoding(Encoding.JPEG)
+            .quality(50)
+            .rotation(90);
+
+        ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
+
+        try(Camera camera = new Camera(config))
+        {
+            // let the camera warm up
+            Thread.sleep(2000);
+
+            ByteArrayOutputStream gifByteStream = new ByteArrayOutputStream();
+            ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(gifByteStream);
+
+            // create a gif sequence with the type of the first image, 1 second
+            // between frames, which loops continuously
+            GifSequenceWriter writer = new GifSequenceWriter(imageOutputStream, 5, msBetweenFrames, true);
+
+            List<byte[]> imageBytesList = new ArrayList<>();
+
+            for (int i = 0; i < numFrames; i++)
+            {
+                camera.takePicture(handler);
+                imageBytesList.add(handler.result());
+            }
+
+            System.out.println("Photos captured, generating GIF...");
+
+            for(int i = 0; i < imageBytesList.size(); i++)
+            {
+                InputStream in = new ByteArrayInputStream(imageBytesList.get(i));
+                BufferedImage bImageFromConvert = ImageIO.read(in);
+                writer.writeToSequence(bImageFromConvert);
+            }
+
+            imageOutputStream.seek(0);
+            while (true) {
+                try {
+                    gifByteStream.write(imageOutputStream.readByte());
+                } catch (EOFException e) {
+                    System.out.println("End of Image Stream");
+                    break;
+                } catch (IOException e) {
+                    System.out.println("Error processing the Image Stream");
+                    break;
+                }
+            }
+            byte[] gifBytes = gifByteStream.toByteArray();
+
+            writer.close();
+            gifByteStream.close();
+            imageOutputStream.close();
+
+            return gifBytes;
+        }
+
+    }
 }
