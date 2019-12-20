@@ -90,6 +90,9 @@ public class MicrophoneService implements LineListener {
         if (kill)
         {
             System.out.println("Mic timer killed.");
+            microphone.stop();
+            microphone.close();
+            callback.call();
         }
         kill = false;
     }
