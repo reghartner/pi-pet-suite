@@ -35,8 +35,7 @@ public class RewardService
      * @return
      * @throws Exception
      */
-    public String rewardForSilence(double minutes, boolean smallTreat)
-        throws Exception
+    public String rewardForSilence(double minutes, boolean smallTreat) throws Exception
     {
         this.minutes = minutes;
         this.smallTreat = smallTreat;

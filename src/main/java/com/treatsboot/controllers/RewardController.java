@@ -9,8 +9,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.InvocationTargetException;
-
 @RestController
 @CrossOrigin(origins = "*", exposedHeaders = "Content-Disposition")
 @RequestMapping(value = "/api")
@@ -32,7 +30,8 @@ public class RewardController
         value = "/reward",
         method = RequestMethod.POST)
     public HttpEntity<String> treat(
-        @RequestParam(required = false, defaultValue = "false") boolean smallTreat) throws Exception
+        @RequestParam(required = false, defaultValue = "false") boolean smallTreat)
+        throws Exception
     {
         String filename = rewardService.dispenseAndRecord(smallTreat);
         return new HttpEntity<>(filename);
@@ -47,7 +46,7 @@ public class RewardController
     public HttpEntity<String> rewardForSilence(
         @PathVariable double minutes,
         @RequestParam(required = false, defaultValue = "false") boolean smallTreat)
-        throws InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
+        throws Exception
     {
         String filename = rewardService.rewardForSilence(minutes, smallTreat);
         return new HttpEntity<>(filename);
@@ -59,7 +58,8 @@ public class RewardController
         method = RequestMethod.POST)
     public HttpStatus rewardForSilenceOverTime(
         @PathVariable double minutes,
-        @PathVariable double totalMinutes) throws Exception
+        @PathVariable double totalMinutes)
+        throws Exception
     {
         rewardService.rewardForSilenceOverTime(minutes, totalMinutes);
         return HttpStatus.OK;
