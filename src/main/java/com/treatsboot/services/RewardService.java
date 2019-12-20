@@ -3,8 +3,6 @@ package com.treatsboot.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Date;
 
@@ -20,7 +18,6 @@ public class RewardService
     private final CameraService camera;
 
     private long startTime;
-    private long endTime;
     private boolean smallTreat;
     private double minutes;
 
@@ -32,19 +29,6 @@ public class RewardService
         this.camera = camera;
     }
 
-    private void rewardCallback()
-    {
-        long endTime = new Date().getTime();
-
-        System.out.println(format(
-            "He made it.  It took him %s until he was silent for %s minutes. % treat coming!",
-            getPrettyDuration(endTime-startTime),
-            minutes,
-            smallTreat ? "Small" : "Big"));
-
-        treats.treat(smallTreat);
-    }
-
     /**
      * Dispenses treats after n minutes of silence and records a gif.  Returns the name of the file for retrieval.
      * @param smallTreat
@@ -52,7 +36,7 @@ public class RewardService
      * @throws Exception
      */
     public String rewardForSilence(double minutes, boolean smallTreat)
-        throws InterruptedException, NoSuchMethodException, InvocationTargetException, IllegalAccessException
+        throws Exception
     {
         this.minutes = minutes;
         this.smallTreat = smallTreat;
@@ -64,20 +48,27 @@ public class RewardService
             minutes,
             smallTreat ? "small" : "big"));
 
-        Method callback = RewardService.class.getMethod("rewardCallback");
-
-        mic.callbackAfterNMinutesOfSilence(minutes, callback);
+        mic.callbackAfterNMinutesOfSilence(minutes, this::silenceCallback);
 
         return filename;
     }
 
     /**
-     * Starts Dispensing Treats, takes a picture while they are coming out and returns the picture
+     * return object due to constraints of using Callable
+     * @return
      */
-    public byte[] dispenseAndSnap(boolean smallTreat) throws Exception
+    private Object silenceCallback()
     {
+        long endTime = new Date().getTime();
+
+        System.out.println(format(
+            "He made it.  It took him %s until he was silent for %s minutes. % treat coming!",
+            getPrettyDuration(endTime-startTime),
+            minutes,
+            smallTreat ? "Small" : "Big"));
+
         treats.treat(smallTreat);
-        return camera.snapAndReturn();
+        return null;
     }
 
     /**
@@ -115,7 +106,7 @@ public class RewardService
      * @param totalMinutes
      */
     public void rewardForSilenceOverTime(double intervalMinutes, double totalMinutes)
-        throws InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
+        throws Exception
     {
         long startTime = System.currentTimeMillis();
         long endTime = startTime + (int)(totalMinutes * 60000);
