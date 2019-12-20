@@ -26,7 +26,7 @@
 
 
 <div>
-  <button onclick="kill()" >Kill any running treat timers.</button>
+  <button onclick="kill()" >Kill any running treat timers.</button>e
 </div>
 
 <script language="JavaScript" >
@@ -44,6 +44,15 @@
 
   pic.onload = function () {
     $("#loading").text("");
+  }
+
+  kill = function() {
+     $.ajax({
+      type: "POST",
+      url: host + "api/reward/kill"
+    });
+
+    console.log("rewarding harley");
   }
 
   rewardNow = function() {
