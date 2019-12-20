@@ -64,4 +64,14 @@ public class RewardController
         rewardService.rewardForSilenceOverTime(minutes, totalMinutes);
         return HttpStatus.OK;
     }
+
+    @ApiOperation(value = "Kill any reward timers")
+    @RequestMapping(
+        value = "/reward/kill",
+        method = RequestMethod.POST)
+    public HttpStatus rewardForSilenceOverTime()
+    {
+        rewardService.kill();
+        return HttpStatus.OK;
+    }
 }
