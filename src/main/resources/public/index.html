@@ -56,7 +56,7 @@
   }
 
   rewardNow = function() {
-    var smallTreat = document.getElementsByName("smallTreatNow")[0].value;
+    var smallTreat = document.getElementsByName("smallTreatNow")[0].checked;
      $.ajax({
       type: "POST",
       url: host + "api/reward" + minutes + "?smallTreat= " + smallTreat
@@ -67,7 +67,7 @@
 
   rewardAfter = function() {
     var minutes = document.getElementsByName("rewardAfterMinutes")[0].value;
-    var smallTreat = document.getElementsByName("smallTreatMinutes")[0].value;
+    var smallTreat = document.getElementsByName("smallTreatMinutes")[0].checked;
      $.ajax({
       type: "POST",
       url: host + "api/reward/after/" + minutes + "?smallTreat= " + smallTreat
