@@ -6,11 +6,6 @@
 </head>
 
 <div>
-  <button onclick="setHost()" >Set Host</button>
-  <input name="setHost" style="width:200px" value="http://treats:8080" />
-</div>
-
-<div>
   <button onclick="refreshPic()" >Refresh pic</button>
   <a id="loading" ></a>
 </div>
@@ -24,34 +19,27 @@
 </div>
 
 <script language="JavaScript" >
-  var host = "http://treats:8080";
-  $("#pic").attr("src", host + "/api/gifArchive/latest?" + new Date().getTime());
-
-  setHost = function() {
-    var newHost = document.getElementsByName("setHost")[0].value;
-    host = newHost;
-    refreshPic();
-  }
+  var host = window.location;
+  $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
 
   refreshPic = function() {
     $("#loading").text("Refreshing Image...");
-    $("#pic").attr("src", host + "/api/gifArchive/latest?" + new Date().getTime());
+    $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
   }
 
   latestImageSouorce = function() {
-    return host + "/api/gifArchive/latest";
+    return host + "api/gifArchive/latest";
   }
 
   pic.onload = function () {
     $("#loading").text("");
   }
 
-
   rewardAfter = function() {
     var minutes = document.getElementsByName("rewardAfterMinutes")[0].value;
      $.ajax({
       type: "POST",
-      url: host + "/api/reward/after/" + minutes
+      url: host + "api/reward/after/" + minutes
     });
 
     console.log("rewarding harley after " + minutes + " minutes.");

@@ -44,8 +44,8 @@ public class RewardService
         String filename = getGifName();
         System.out.println(format(
             "Will reward Harley with a %s treat after he's silent for %s minutes.",
-            minutes,
-            smallTreat ? "small" : "big"));
+            smallTreat ? "small" : "big",
+            minutes)) ;
 
         mic.callbackAfterNMinutesOfSilence(minutes, this::silenceCallback);
 
