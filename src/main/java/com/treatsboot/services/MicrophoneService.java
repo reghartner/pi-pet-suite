@@ -1,5 +1,6 @@
 package com.treatsboot.services;
 
+import com.treatsboot.repositories.EventRepository;
 import com.treatsboot.utilities.Microphone;
 import com.treatsboot.utilities.MicrophoneInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +19,16 @@ public class MicrophoneService implements LineListener {
 
     private static int NOISE_THRESHOLD = 4000;
     private Microphone microphone;
+    private EventRepository eventRepository;
 
     private long startTime;
     private long endTime;
 
     @Autowired
-    public MicrophoneService(Microphone microphone)
+    public MicrophoneService(Microphone microphone, EventRepository eventRepository)
     {
         this.microphone = microphone;
+        this.eventRepository = eventRepository;
     }
 
     /**
@@ -76,7 +79,8 @@ public class MicrophoneService implements LineListener {
                     {
                         long now = new Date().getTime();
                         long silentMs = now - startTime;
-                        System.out.println("Triggered after " + getPrettyDuration(silentMs) + " of silence.  Resetting timer.");
+                        eventRepository.push(
+                            "Mic triggered after " + getPrettyDuration(silentMs) + " of silence.  Resetting timer.");
                         resetTimer(milliseconds, true);
                     }
                 }
@@ -89,7 +93,7 @@ public class MicrophoneService implements LineListener {
 
         if (kill)
         {
-            System.out.println("Mic timer killed.");
+            eventRepository.push("Mic timer killed");
             microphone.stop();
             microphone.close();
         }

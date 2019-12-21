@@ -1,5 +1,6 @@
 package com.treatsboot.services;
 
+import com.treatsboot.repositories.EventRepository;
 import com.treatsboot.repositories.MediaRepository;
 import com.treatsboot.utilities.GifSequenceWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,13 @@ import static uk.co.caprica.picam.CameraConfiguration.cameraConfiguration;
 public class CameraService
 {
     private MediaRepository mediaRepository;
+    private EventRepository eventRepository;
 
     @Autowired
-    public CameraService(MediaRepository mediaRepository)
+    public CameraService(MediaRepository mediaRepository, EventRepository eventRepository)
     {
         this.mediaRepository = mediaRepository;
+        this.eventRepository = eventRepository;
     }
 
     public byte[] snapAndReturn() throws Exception
@@ -108,7 +111,6 @@ public class CameraService
                 try {
                     gifByteStream.write(imageOutputStream.readByte());
                 } catch (EOFException e) {
-                    System.out.println("End of Image Stream");
                     break;
                 } catch (IOException e) {
                     System.out.println("Error processing the Image Stream");
@@ -119,6 +121,8 @@ public class CameraService
             writer.close();
             gifByteStream.close();
             imageOutputStream.close();
+
+            eventRepository.push("New gif available! " + filename);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.treatsboot.services;
 
+import com.treatsboot.repositories.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,21 +13,27 @@ import static java.lang.String.format;
 @Service
 public class RewardService
 {
-
     private final MicrophoneService mic;
     private final TreatDispenserService treats;
     private final CameraService camera;
+    private final EventRepository eventRepository;
 
     private long startTime;
     private boolean smallTreat;
     private double minutes;
+    private boolean kill = false;
 
     @Autowired
-    public RewardService(MicrophoneService mic, TreatDispenserService treats, CameraService camera)
+    public RewardService(
+        MicrophoneService mic,
+        TreatDispenserService treats,
+        CameraService camera,
+        EventRepository eventRepository)
     {
         this.mic = mic;
         this.treats = treats;
         this.camera = camera;
+        this.eventRepository = eventRepository;
     }
 
     /**
@@ -35,38 +42,36 @@ public class RewardService
      * @return
      * @throws Exception
      */
-    public String rewardForSilence(double minutes, boolean smallTreat) throws Exception
+    public void rewardForSilence(double minutes, boolean smallTreat) throws Exception
     {
         this.minutes = minutes;
         this.smallTreat = smallTreat;
         this.startTime = new Date().getTime();
 
-        String filename = getGifName();
-        System.out.println(format(
+        String message = format(
             "Will reward Harley with a %s treat after he's silent for %s minutes.",
             smallTreat ? "small" : "big",
-            minutes)) ;
+            minutes);
+        eventRepository.push(message);
 
         mic.callbackAfterNMinutesOfSilence(minutes, this::silenceCallback);
-
-        return filename;
     }
 
     /**
      * return object due to constraints of using Callable
      * @return
      */
-    private Object silenceCallback()
+    private Object silenceCallback() throws Exception
     {
         long endTime = new Date().getTime();
-
-        System.out.println(format(
+        String message = format(
             "He made it.  It took him %s until he was silent for %s minutes. % treat coming!",
             getPrettyDuration(endTime-startTime),
             minutes,
-            smallTreat ? "Small" : "Big"));
+            smallTreat ? "Small" : "Big");
 
-        treats.treat(smallTreat);
+        eventRepository.push(message);
+        dispenseAndRecord(smallTreat);
         return null;
     }
 
@@ -76,12 +81,11 @@ public class RewardService
      * @return
      * @throws Exception
      */
-    public String dispenseAndRecord(boolean smallTreat) throws Exception
+    public void dispenseAndRecord(boolean smallTreat) throws Exception
     {
         String filename = getGifName();
-        treats.treat(smallTreat);
         camera.recordAndSaveGif(filename);
-        return filename;
+        treats.treat(smallTreat, 1000);
     }
 
     /**
@@ -89,6 +93,7 @@ public class RewardService
      */
     public void kill()
     {
+        this.kill = true;
         mic.kill();
     }
 
@@ -111,12 +116,20 @@ public class RewardService
         long endTime = startTime + (int)(totalMinutes * 60000);
         int treatsDispensed = 0;
 
-        while(System.currentTimeMillis() < endTime)
+        while(System.currentTimeMillis() < endTime && !kill)
         {
             rewardForSilence(intervalMinutes, true);
             treatsDispensed++;
         }
 
-        System.out.println(format("Times up.  Total treats dispensed: " + treatsDispensed));
+        if (kill)
+        {
+            eventRepository.push("Rolling rewards killed");
+            kill = false;
+        }
+        else
+        {
+            eventRepository.push(format("Times up.  Total treats dispensed: " + treatsDispensed));
+        }
     }
 }

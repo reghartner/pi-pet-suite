@@ -5,7 +5,6 @@ import com.treatsboot.services.TreatDispenserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,12 +28,12 @@ public class RewardController
     @RequestMapping(
         value = "/reward",
         method = RequestMethod.POST)
-    public HttpEntity<String> treat(
+    public HttpStatus treat(
         @RequestParam(required = false, defaultValue = "false") boolean smallTreat)
         throws Exception
     {
-        String filename = rewardService.dispenseAndRecord(smallTreat);
-        return new HttpEntity<>(filename);
+        rewardService.dispenseAndRecord(smallTreat);
+        return HttpStatus.OK;
     }
 
     @ApiOperation(value =
@@ -43,13 +42,13 @@ public class RewardController
     @RequestMapping(
         value = "/reward/after/{minutes}",
         method = RequestMethod.POST)
-    public HttpEntity<String> rewardForSilence(
+    public HttpStatus rewardForSilence(
         @PathVariable double minutes,
         @RequestParam(required = false, defaultValue = "false") boolean smallTreat)
         throws Exception
     {
-        String filename = rewardService.rewardForSilence(minutes, smallTreat);
-        return new HttpEntity<>(filename);
+        rewardService.rewardForSilence(minutes, smallTreat);
+        return HttpStatus.OK;
     }
 
     @ApiOperation(value = "Reward with some treats after some minutes of silence.  Repeats until a max time.  Will record GIFs")

@@ -6,14 +6,11 @@ import org.springframework.stereotype.Component;
 
 import javax.sound.sampled.*;
 import java.io.IOException;
-import java.util.Date;
 
 @Component
 public class Microphone
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Microphone.class);
-
-    private static final int DEVICE_INDEX = 1;
 
     // the line from which audio data is captured
     private TargetDataLine line;
@@ -60,7 +57,7 @@ public class Microphone
      */
     public void stop() {
         line.stop();
-        LOGGER.info("Stop recording..." + new Date());
+        LOGGER.info("Microphone Off");
     }
 
     /**
@@ -69,6 +66,5 @@ public class Microphone
     public void close() {
         line.stop();
         line.close();
-        LOGGER.info("Data line closed");
     }
 }

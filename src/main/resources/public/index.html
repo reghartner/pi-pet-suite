@@ -6,7 +6,7 @@
 </head>
 
 <div>
-  <button onclick="refreshPic()" >Refresh pic</button>
+  <button onclick="refreshPic()" >Get latest gif</button>
   <a id="loading" ></a>
 </div>
 <div>
@@ -29,9 +29,28 @@
   <button onclick="kill()" >Kill any running treat timers.</button>
 </div>
 
+<div id="eventList">
+</div>
+
 <script language="JavaScript" >
   var host = window.location;
   $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
+
+  eventList = document.createElement('ul');
+  document.getElementById('eventList').appendChild(eventList);
+
+  function pollForEvents(){
+    $.get(host + "api/events", function(data) {
+        if (data) {
+          data.forEach(function (event) {
+          let li = document.createElement('li');
+          eventList.appendChild(li);
+          li.innerHTML += event;
+          });
+        }
+        setTimeout(pollForEvents,5000);
+    });
+  }
 
   refreshPic = function() {
     $("#loading").text("Refreshing Image...");
@@ -75,4 +94,6 @@
 
     console.log("rewarding harley after " + minutes + " minutes.");
   }
+
+  pollForEvents();
 </script>
