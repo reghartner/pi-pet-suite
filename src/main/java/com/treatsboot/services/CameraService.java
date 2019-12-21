@@ -67,7 +67,7 @@ public class CameraService
     public void recordAndSaveGif(String filename) throws Exception
     {
         int msBetweenFrames = 200;
-        int numFrames = 50;
+        int numFrames = 100;
 
         CameraConfiguration config = cameraConfiguration()
             .width(600)
@@ -123,6 +123,10 @@ public class CameraService
             imageOutputStream.close();
 
             eventRepository.push("New gif available! " + filename);
+        }
+        catch (Exception e)
+        {
+            eventRepository.push("There seems to be an issue with the camera... %s", e.getMessage());
         }
     }
 

@@ -1,45 +1,107 @@
-<head xmlns="http://www.w3.org/1999/html">
-  <script
-      src="https://code.jquery.com/jquery-3.4.1.min.js"
-      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-      crossorigin="anonymous"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
+<body>
 
-<div>
-  <button onclick="recordGif()" >Get a new gif</button>
-  <a id="loading" ></a>
-</div>
-<div>
-  <img id="pic" width="640" height="480"/>
+<div class="jumbotron text-center">
+  <h1>Harley's Treat Dispenser</h1>
 </div>
 
-<div>
-  <button onclick="rewardNow()" >Reward now</button>
-  <input type="checkbox" name="smallTreatNow"/> Small treat?
-</div>
-
-<div>
-  <button onclick="rewardAfter()" >Set to Reward After Minutes</button>
-  <input name="rewardAfterMinutes" style="width:30px" value="5" />
-  <input type="checkbox" name="smallTreatMinutes"/> Small treat?
-</div>
-
-
-<div>
-  <button onclick="kill()" >Kill any running treat timers.</button>
-</div>
-
-<div id="eventList">
+<div class="container">
+  <div class="col-sm-3">
+    <div class="row" style="padding-bottom:5px;">
+      <button class="btn btn-success" onclick="recordGif()" >
+        Get a new gif
+        <span class="glyphicon glyphicon-camera" />
+      </button>
+    </div>
+    <div class="row" style="padding-bottom:5px;">
+      <button onclick="rewardNow()" class="btn btn-success" >Reward now</button>
+    </div>
+    <div class="row" style="padding-bottom:5px;">
+      <button onclick="rewardAfter()" class="btn btn-success" >
+        Reward after
+        <span id="rewardAfterMinutes">5</span>
+        minutes
+      </button>
+    </div>
+    <div class="row" style="padding-bottom:5px;">
+      <button onclick="flipLargeTreatFlag()" class="btn btn-warning" id="largeTreatFlag">
+        <span id="largeTreatLabel">Large Treats Disabled</span>
+        <span id="largeTreatStar" class="glyphicon glyphicon-star-empty" />
+      </button>
+    </div>
+    <div class="row" style="padding-bottom:5px;">
+      <button onclick="kill()" class="btn btn-danger  ">
+        Kill Active Rewards
+        <span class="glyphicon glyphicon-remove" />
+      </button>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="row" style="padding-bottom:5px;">
+      <h4 id="loading" class="media-heading">Latest Gif</h4>
+      <img id="pic" class="media-object"  width="600" height="400"/>
+    </div>
+    <div class="row" id="eventList">
+    </div>
+  </div>
 </div>
 
 <script language="JavaScript" >
   var host = window.location;
+
+  // Actions
+  var largeTreat = false;
+  flipLargeTreatFlag = function() {
+    largeTreat = !largeTreat;
+    if (largeTreat) {
+      $("#largeTreatFlag").removeClass("btn btn-warning").addClass("btn btn-info");
+      $("#largeTreatStar").removeClass("glyphicon glyphicon-star-empty").addClass("glyphicon glyphicon-star");
+      $("#largeTreatLabel").text("Large Treats Enabled");
+    } else {
+      $("#largeTreatFlag").removeClass("btn btn-info").addClass("btn btn-warning");
+      $("#largeTreatStar").removeClass("glyphicon glyphicon-star").addClass("glyphicon glyphicon-star-empty");
+      $("#largeTreatLabel").text("Large Treats Disabled");
+    }
+  }
+
+  recordGif = function() {
+     $("#loading").text("Refreshing Image...");
+     $.ajax({type: "POST",url: host + "api/recordGif"});
+  }
+
+  rewardNow = function() { $.ajax({ type: "POST", url: host + "api/reward?smallTreat= " + !largeTreat }); }
+
+  rewardAfter = function() {
+    var minutes = $("#rewardAfterMinutes").text();
+     $.ajax({ type: "POST", url: host + "api/reward/after/" + minutes + "?smallTreat= " + !largeTreat });
+  }
+
+  kill = function() { $.ajax({ type: "POST", url: host + "api/reward/kill" }); }
+
+  // Image management
   $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
+  pic.onload = function () { $("#loading").text("Latest Gif"); }
+
+  refreshPic = function() {
+    $("#loading").text("Refreshing Image...");
+    $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
+  }
+
+  // Event polling
 
   eventList = document.createElement('ul');
   document.getElementById('eventList').appendChild(eventList);
 
-  function pollForEvents(){
+  pollForEvents = function() {
     $.get(host + "api/events", function(data) {
         if (data) {
           data.forEach(function (event) {
@@ -55,56 +117,8 @@
     });
   }
 
-  recordGif = function() {
-     $("#loading").text("Refreshing Image...");
-     $.ajax({
-      type: "POST",
-      url: host + "api/recordGif"
-    });
-  }
-
-  refreshPic = function() {
-    $("#loading").text("Refreshing Image...");
-    $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
-  }
-
-  latestImageSouorce = function() {
-    return host + "api/gifArchive/latest";
-  }
-
-  pic.onload = function () {
-    $("#loading").text("");
-  }
-
-  kill = function() {
-     $.ajax({
-      type: "POST",
-      url: host + "api/reward/kill"
-    });
-
-    console.log("killing current reward timer");
-  }
-
-  rewardNow = function() {
-    var smallTreat = document.getElementsByName("smallTreatNow")[0].checked;
-     $.ajax({
-      type: "POST",
-      url: host + "api/reward?smallTreat= " + smallTreat
-    });
-
-    console.log("rewarding harley");
-  }
-
-  rewardAfter = function() {
-    var minutes = document.getElementsByName("rewardAfterMinutes")[0].value;
-    var smallTreat = document.getElementsByName("smallTreatMinutes")[0].checked;
-     $.ajax({
-      type: "POST",
-      url: host + "api/reward/after/" + minutes + "?smallTreat= " + smallTreat
-    });
-
-    console.log("rewarding harley after " + minutes + " minutes.");
-  }
-
   pollForEvents();
 </script>
+
+</body>
+</html>
