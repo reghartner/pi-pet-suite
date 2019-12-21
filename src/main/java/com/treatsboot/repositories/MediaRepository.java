@@ -19,7 +19,8 @@ public class MediaRepository
                 lastMod = file.lastModified();
             }
         }
-            return getMedia(latest.getName());
+
+        return latest == null ? new byte[0] : getMedia(latest.getName());
     }
 
     public String getFullFilename(String filename)

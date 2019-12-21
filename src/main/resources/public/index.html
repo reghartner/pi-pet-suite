@@ -45,6 +45,9 @@
           data.forEach(function (event) {
           let li = document.createElement('li');
           eventList.appendChild(li);
+          if (event.indexOf('New gif available!') > 0) {
+            refreshPic();
+          }
           li.innerHTML += event;
           });
         }
