@@ -62,6 +62,7 @@ public class MicrophoneService implements LineListener {
 
         microphone.open(this);
         MicrophoneInputStream inputStream = microphone.start();
+        kill = false;
         while(!kill)
         {
             if (new Date().getTime() > endTime)

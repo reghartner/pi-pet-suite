@@ -79,6 +79,7 @@ public class RewardService
         long endTime = startTime + (int)(totalMinutes * 60000);
         int treatsDispensed = 0;
 
+        kill = false;
         while(System.currentTimeMillis() < endTime && !kill)
         {
             rewardForSilence(intervalMinutes, true);
