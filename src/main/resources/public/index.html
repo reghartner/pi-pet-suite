@@ -6,7 +6,7 @@
 </head>
 
 <div>
-  <button onclick="refreshPic()" >Get latest gif</button>
+  <button onclick="recordGif()" >Get a new gif</button>
   <a id="loading" ></a>
 </div>
 <div>
@@ -52,6 +52,13 @@
           });
         }
         setTimeout(pollForEvents,5000);
+    });
+  }
+
+  recordGif = function() {
+     $.ajax({
+      type: "POST",
+      url: host + "api/recordGif"
     });
   }
 
