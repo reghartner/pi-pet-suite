@@ -32,7 +32,7 @@ public class MicrophoneService implements LineListener {
     }
 
     /**
-     * Reset the timers.  If the sleep flag is true, sleeps for 500ms so we don't trigger the
+     * Reset the timers.  If the sleep flag is true, sleeps for 1000ms so we don't trigger the
      * mic multiple times in the same event
      * @param ms
      * @param sleep
@@ -44,7 +44,7 @@ public class MicrophoneService implements LineListener {
 
         if(sleep)
         {
-            Thread.sleep(500);
+            Thread.sleep(1000);
         }
 
     }
