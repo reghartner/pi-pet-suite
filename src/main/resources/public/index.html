@@ -56,6 +56,7 @@
   }
 
   recordGif = function() {
+     $("#loading").text("Refreshing Image...");
      $.ajax({
       type: "POST",
       url: host + "api/recordGif"
