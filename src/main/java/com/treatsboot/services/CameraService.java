@@ -92,6 +92,7 @@ public class CameraService
         try(Camera camera = new Camera(config))
         {
             lightService.on();
+
             // let the camera warm up
             Thread.sleep(2000);
 
@@ -117,6 +118,8 @@ public class CameraService
                 BufferedImage bImageFromConvert = ImageIO.read(in);
                 writer.writeToSequence(bImageFromConvert);
             }
+            
+            lightService.off();
 
             imageOutputStream.seek(0);
             while (true) {
@@ -135,7 +138,6 @@ public class CameraService
             imageOutputStream.close();
 
             eventRepository.push("New gif available! " + filename);
-            lightService.off();
         }
         catch (Exception e)
         {
