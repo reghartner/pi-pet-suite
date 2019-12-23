@@ -29,7 +29,7 @@ public class GifSequenceWriter {
      * @param imageType one of the imageTypes specified in BufferedImage
      * @param timeBetweenFramesMS the time between frames in miliseconds
      * @param loopContinuously wether the gif should loop repeatedly
-     * @throws IIOException if no gif ImageWriters are found
+     * @throws IOException if no gif ImageWriters are found
      *
      * @author Elliot Kroo (elliot[at]kroo[dot]net)
      */
@@ -37,7 +37,7 @@ public class GifSequenceWriter {
         ImageOutputStream outputStream,
         int imageType,
         int timeBetweenFramesMS,
-        boolean loopContinuously) throws IIOException, IOException {
+        boolean loopContinuously) throws IOException {
         // my method to create a writer
         gifWriter = getWriter();
         imageWriteParam = gifWriter.getDefaultWriteParam();

@@ -1,0 +1,110 @@
+<head xmlns="http://www.w3.org/1999/html">
+  <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
+</head>
+
+<div>
+  <button onclick="recordGif()" >Get a new gif</button>
+  <a id="loading" ></a>
+</div>
+<div>
+  <img id="pic" width="640" height="480"/>
+</div>
+
+<div>
+  <button onclick="rewardNow()" >Reward now</button>
+  <input type="checkbox" name="smallTreatNow"/> Small treat?
+</div>
+
+<div>
+  <button onclick="rewardAfter()" >Set to Reward After Minutes</button>
+  <input name="rewardAfterMinutes" style="width:30px" value="5" />
+  <input type="checkbox" name="smallTreatMinutes"/> Small treat?
+</div>
+
+
+<div>
+  <button onclick="kill()" >Kill any running treat timers.</button>
+</div>
+
+<div id="eventList">
+</div>
+
+<script language="JavaScript" >
+  var host = window.location;
+  $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
+
+  eventList = document.createElement('ul');
+  document.getElementById('eventList').appendChild(eventList);
+
+  function pollForEvents(){
+    $.get(host + "api/events", function(data) {
+        if (data) {
+          data.forEach(function (event) {
+          let li = document.createElement('li');
+          eventList.appendChild(li);
+          if (event.indexOf('New gif available!') > 0) {
+            refreshPic();
+          }
+          li.innerHTML += event;
+          });
+        }
+        setTimeout(pollForEvents,5000);
+    });
+  }
+
+  recordGif = function() {
+     $("#loading").text("Refreshing Image...");
+     $.ajax({
+      type: "POST",
+      url: host + "api/recordGif"
+    });
+  }
+
+  refreshPic = function() {
+    $("#loading").text("Refreshing Image...");
+    $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
+  }
+
+  latestImageSouorce = function() {
+    return host + "api/gifArchive/latest";
+  }
+
+  pic.onload = function () {
+    $("#loading").text("");
+  }
+
+  kill = function() {
+     $.ajax({
+      type: "POST",
+      url: host + "api/reward/kill"
+    });
+
+    console.log("killing current reward timer");
+  }
+
+  rewardNow = function() {
+    var smallTreat = document.getElementsByName("smallTreatNow")[0].checked;
+     $.ajax({
+      type: "POST",
+      url: host + "api/reward?smallTreat= " + smallTreat
+    });
+
+    console.log("rewarding harley");
+  }
+
+  rewardAfter = function() {
+    var minutes = document.getElementsByName("rewardAfterMinutes")[0].value;
+    var smallTreat = document.getElementsByName("smallTreatMinutes")[0].checked;
+     $.ajax({
+      type: "POST",
+      url: host + "api/reward/after/" + minutes + "?smallTreat= " + smallTreat
+    });
+
+    console.log("rewarding harley after " + minutes + " minutes.");
+  }
+
+  pollForEvents();
+</script>

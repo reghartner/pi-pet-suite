@@ -1,5 +1,6 @@
 package com.treatsboot.services;
 
+import com.treatsboot.repositories.EventRepository;
 import com.treatsboot.utilities.Microphone;
 import com.treatsboot.utilities.MicrophoneInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.Callable;
 
 import static com.treatsboot.utilities.DurationHelpers.getPrettyDuration;
 
@@ -17,18 +19,20 @@ public class MicrophoneService implements LineListener {
 
     private static int NOISE_THRESHOLD = 4000;
     private Microphone microphone;
+    private EventRepository eventRepository;
 
     private long startTime;
     private long endTime;
 
     @Autowired
-    public MicrophoneService(Microphone microphone)
+    public MicrophoneService(Microphone microphone, EventRepository eventRepository)
     {
         this.microphone = microphone;
+        this.eventRepository = eventRepository;
     }
 
     /**
-     * Reset the timers.  If the sleep flag is true, sleeps for 500ms so we don't trigger the
+     * Reset the timers.  If the sleep flag is true, sleeps for 1000ms so we don't trigger the
      * mic multiple times in the same event
      * @param ms
      * @param sleep
@@ -40,25 +44,32 @@ public class MicrophoneService implements LineListener {
 
         if(sleep)
         {
-            Thread.sleep(500);
+            Thread.sleep(1000);
         }
 
     }
 
-    public void returnAfterMinutesOfSilence(double minutes) throws InterruptedException
+    private boolean kill = false;
+    public void kill()
+    {
+        kill = true;
+    }
+
+    public void callbackAfterNMinutesOfSilence(double minutes, Callable callback) throws Exception
     {
         int milliseconds = (int)(minutes * 60 * 1000);
         resetTimer(milliseconds, false);
 
         microphone.open(this);
         MicrophoneInputStream inputStream = microphone.start();
-        while(true)
+        kill = false;
+        while(!kill)
         {
             if (new Date().getTime() > endTime)
             {
                 microphone.stop();
                 microphone.close();
-                return;
+                callback.call();
             }
             else
             {
@@ -69,7 +80,8 @@ public class MicrophoneService implements LineListener {
                     {
                         long now = new Date().getTime();
                         long silentMs = now - startTime;
-                        System.out.println("Triggered after " + getPrettyDuration(silentMs) + " of silence.  Resetting timer.");
+                        eventRepository.push(
+                            "Mic triggered after " + getPrettyDuration(silentMs) + " of silence.  Resetting timer.");
                         resetTimer(milliseconds, true);
                     }
                 }
@@ -78,8 +90,15 @@ public class MicrophoneService implements LineListener {
                     e.printStackTrace();
                 }
             }
-
         }
+
+        if (kill)
+        {
+            eventRepository.push("Mic timer killed");
+            microphone.stop();
+            microphone.close();
+        }
+        kill = false;
     }
 
     @Override
