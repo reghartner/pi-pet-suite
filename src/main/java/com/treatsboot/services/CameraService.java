@@ -25,12 +25,17 @@ import static uk.co.caprica.picam.CameraConfiguration.cameraConfiguration;
 public class CameraService
 {
     private MediaRepository mediaRepository;
+    private LightService lightService;
     private EventRepository eventRepository;
 
     @Autowired
-    public CameraService(MediaRepository mediaRepository, EventRepository eventRepository)
+    public CameraService(
+        MediaRepository mediaRepository,
+        LightService lightService,
+        EventRepository eventRepository)
     {
         this.mediaRepository = mediaRepository;
+        this.lightService = lightService;
         this.eventRepository = eventRepository;
     }
 
@@ -41,6 +46,7 @@ public class CameraService
 
     private byte[] snap() throws Exception
     {
+        lightService.on();
         CameraConfiguration config = cameraConfiguration()
             .width(1024)
             .height(768)
@@ -54,7 +60,12 @@ public class CameraService
         try(Camera camera = new Camera(config))
         {
             camera.takePicture(handler);
+            lightService.off();
             return handler.result();
+        }
+        finally
+        {
+            lightService.off();
         }
     }
 
@@ -80,6 +91,7 @@ public class CameraService
 
         try(Camera camera = new Camera(config))
         {
+            lightService.on();
             // let the camera warm up
             Thread.sleep(2000);
 
@@ -123,10 +135,12 @@ public class CameraService
             imageOutputStream.close();
 
             eventRepository.push("New gif available! " + filename);
+            lightService.off();
         }
         catch (Exception e)
         {
             eventRepository.push("There seems to be an issue with the camera... %s", e.getMessage());
+            lightService.off();
         }
     }
 
