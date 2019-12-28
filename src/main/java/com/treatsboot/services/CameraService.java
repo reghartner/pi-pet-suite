@@ -118,7 +118,7 @@ public class CameraService
                 BufferedImage bImageFromConvert = ImageIO.read(in);
                 writer.writeToSequence(bImageFromConvert);
             }
-            
+
             lightService.off();
 
             imageOutputStream.seek(0);
