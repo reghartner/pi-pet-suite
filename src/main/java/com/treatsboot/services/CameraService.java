@@ -93,8 +93,8 @@ public class CameraService
         {
             lightService.on();
 
-            // let the camera warm up
-            Thread.sleep(2000);
+            // let the camera warm up and give the light time to turn on
+            Thread.sleep(3000);
 
             ByteArrayOutputStream gifByteStream = new ByteArrayOutputStream();
             ImageOutputStream imageOutputStream = new FileImageOutputStream(
