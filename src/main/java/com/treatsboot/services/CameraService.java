@@ -89,6 +89,8 @@ public class CameraService
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
 
+        List<byte[]> imageBytesList = new ArrayList<>();
+
         try(Camera camera = new Camera(config))
         {
             lightService.on();
@@ -96,14 +98,7 @@ public class CameraService
             eventRepository.push("Warming up camera...");
             Thread.sleep(3000);
 
-            ByteArrayOutputStream gifByteStream = new ByteArrayOutputStream();
-            ImageOutputStream imageOutputStream = new FileImageOutputStream(
-                new File(mediaRepository.getFullFilename(filename)));
-
-            GifSequenceWriter writer = new GifSequenceWriter(imageOutputStream, 5, msBetweenFrames, true);
-
             eventRepository.push("Starting capture...");
-            List<byte[]> imageBytesList = new ArrayList<>();
             for (int i = 0; i < numFrames; i++)
             {
                 camera.takePicture(handler);
@@ -111,7 +106,21 @@ public class CameraService
             }
 
             lightService.off();
+        }
+        catch (Exception e)
+        {
+            eventRepository.push("There seems to be an issue with the camera... %s", e.getMessage());
+            lightService.off();
+            return;
+        }
+
+        try
+        {
             eventRepository.push("Images captured, generating GIF...");
+
+            ByteArrayOutputStream gifByteStream = new ByteArrayOutputStream();
+            ImageOutputStream imageOutputStream = new FileImageOutputStream(new File(mediaRepository.getFullFilename(filename)));
+            GifSequenceWriter writer = new GifSequenceWriter(imageOutputStream, 5, msBetweenFrames, true);
 
             for(int i = 0; i < imageBytesList.size(); i++)
             {
@@ -121,6 +130,7 @@ public class CameraService
             }
 
             imageOutputStream.seek(0);
+
             while (true) {
                 try {
                     gifByteStream.write(imageOutputStream.readByte());
@@ -132,15 +142,15 @@ public class CameraService
                 }
             }
 
+            eventRepository.push("New gif available! " + filename);
+
             writer.close();
             gifByteStream.close();
             imageOutputStream.close();
-
-            eventRepository.push("New gif available! " + filename);
         }
         catch (Exception e)
         {
-            eventRepository.push("There seems to be an issue with the camera... %s", e.getMessage());
+            eventRepository.push("Encountered issue generating GIF... %s", e.getMessage());
             lightService.off();
         }
     }
