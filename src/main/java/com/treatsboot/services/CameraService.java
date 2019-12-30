@@ -93,7 +93,7 @@ public class CameraService
         {
             lightService.on();
 
-            // let the camera warm up and give the light time to turn on
+            eventRepository.push("Warming up camera...");
             Thread.sleep(3000);
 
             ByteArrayOutputStream gifByteStream = new ByteArrayOutputStream();
@@ -102,15 +102,16 @@ public class CameraService
 
             GifSequenceWriter writer = new GifSequenceWriter(imageOutputStream, 5, msBetweenFrames, true);
 
+            eventRepository.push("Starting capture...");
             List<byte[]> imageBytesList = new ArrayList<>();
-
             for (int i = 0; i < numFrames; i++)
             {
                 camera.takePicture(handler);
                 imageBytesList.add(handler.result());
             }
 
-            System.out.println("Photos captured, generating GIF...");
+            lightService.off();
+            eventRepository.push("Images captured, generating GIF...");
 
             for(int i = 0; i < imageBytesList.size(); i++)
             {
@@ -118,8 +119,6 @@ public class CameraService
                 BufferedImage bImageFromConvert = ImageIO.read(in);
                 writer.writeToSequence(bImageFromConvert);
             }
-            
-            lightService.off();
 
             imageOutputStream.seek(0);
             while (true) {
