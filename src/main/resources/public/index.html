@@ -54,8 +54,16 @@
   </div>
   <div class="col-sm-9">
     <div class="row" style="padding-bottom:5px;">
-      <h4 id="loading" class="media-heading">Latest Gif</h4>
-      <img id="pic" class="media-object"  width="600" height="400"/>
+      <div class="row" style="height: 40px;">
+        <div style="width: 700px;">
+          <div id="dynamic" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+            <span id="current-progress"></span>
+          </div>
+        </div>
+      </div>
+      <div class="row"  class="row" >
+        <img id="pic" class="media-object"  width="600" height="400"/>
+      </div>
     </div>
     <div class="row" id="eventList">
     </div>
@@ -80,8 +88,21 @@
     }
   }
 
+  startProgressBar = function(interval){
+    var current_progress = 0;
+    var interval = setInterval(function() {
+      current_progress += 1;
+      $("#dynamic")
+      .css("width", current_progress + "%")
+      .attr("aria-valuenow", current_progress)
+      .text(current_progress + "%");
+      if (current_progress >= 100)
+          clearInterval(interval);
+    }, interval);
+  }
+
   recordGif = function() {
-     $("#loading").text("Refreshing Image...");
+     startProgressBar(900);
      $.ajax({type: "POST",url: host + "api/recordGif"});
   }
 
@@ -97,10 +118,8 @@
   // Image management
   $("#pirate").attr("src", host + "api/gifArchive/pirate.gif");
   $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
-  pic.onload = function () { $("#loading").text("Latest Gif"); }
 
   refreshPic = function() {
-    $("#loading").text("Refreshing Image...");
     $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
   }
 
