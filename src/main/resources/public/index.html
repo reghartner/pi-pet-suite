@@ -53,17 +53,31 @@
     </div>
   </div>
   <div class="col-sm-9">
-    <div class="row" style="padding-bottom:5px;">
-      <div class="row" style="height: 40px;">
-        <div style="width: 700px;">
-          <div id="dynamic" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-            <span id="current-progress"></span>
-          </div>
+    <div class="row" style="height:20px">
+      <div class="col-sm-12" id="pic-progress-label" >
+        <span/>
+      </div>
+    </div>
+    <div class="row" style="width:630px; height:20px">
+      <div class="col-sm-12">
+        <div id="pic-progress" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+          <span id="current-progress"></span>
         </div>
       </div>
-      <div class="row"  class="row" >
-        <img id="pic" class="media-object"  width="600" height="400"/>
+    </div>
+    <div class="row" style="height:20px">
+      <div class="col-sm-12" id="treat-progress-label" >
+        <span/>
       </div>
+    </div>
+    <div class="row" style="width:630px; height:23px">
+      <div class="col-sm-12">
+        <div id="treat-progress" class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+          <span id="current-treat-progress"></span>
+        </div>
+      </div>
+    <div class="row">
+      <img id="pic" class="media-object"  style="margin:30px" width="600" height="400"/>
     </div>
     <div class="row" id="eventList">
     </div>
@@ -71,7 +85,7 @@
 </div>
 
 <script language="JavaScript" >
-  var host = window.location;
+  var host = "http://treats:8080/"//window.location;
 
   // Actions
   var largeTreat = false;
@@ -88,21 +102,57 @@
     }
   }
 
-  startProgressBar = function(interval){
+  var currentPicIntervalId;
+  startPictureProgressBar = function(ms){
+    $("#pic-progress-label").text("Gif Capture Progress:");
+    clearInterval(currentPicIntervalId);
     var current_progress = 0;
-    var interval = setInterval(function() {
+    currentPicIntervalId = setInterval(function() {
       current_progress += 1;
-      $("#dynamic")
+      $("#pic-progress")
       .css("width", current_progress + "%")
       .attr("aria-valuenow", current_progress)
       .text(current_progress + "%");
       if (current_progress >= 100)
-          clearInterval(interval);
-    }, interval);
+          clearInterval(currentPicIntervalId);
+    }, ms);
   }
 
+  setPictureProgressBar = function(value){
+    clearInterval(currentPicIntervalId);
+    $("#pic-progress")
+      .css("width", value + "%")
+      .attr("aria-valuenow", value)
+      .text(value + "%");
+  }
+  setPictureProgressBar(0);
+
+  var currentTreatIntervalId;
+  startTreatProgressBar = function(ms){
+    $("#treat-progress-label").text("Treat Progress:");
+    clearInterval(currentTreatIntervalId);
+    var current_progress = 0;
+    currentTreatIntervalId = setInterval(function() {
+      current_progress += 1;
+      $("#treat-progress")
+      .css("width", current_progress + "%")
+      .attr("aria-valuenow", current_progress)
+      .text(current_progress + "%");
+      if (current_progress >= 100)
+          clearInterval(currentTreatIntervalId);
+    }, ms);
+  }
+
+  setTreatProgressBar = function(value){
+    clearInterval(currentTreatIntervalId);
+    $("#treat-progress")
+      .css("width", value + "%")
+      .attr("aria-valuenow", value)
+      .text(value + "%");
+  }
+  setTreatProgressBar(0);
+
   recordGif = function() {
-     startProgressBar(900);
      $.ajax({type: "POST",url: host + "api/recordGif"});
   }
 
@@ -132,12 +182,18 @@
     $.get(host + "api/events", function(data) {
         if (data) {
           data.forEach(function (event) {
-          let li = document.createElement('li');
-          eventList.appendChild(li);
-          if (event.indexOf('New gif available!') > 0) {
-            refreshPic();
-          }
-          li.innerHTML += event;
+            let li = document.createElement('li');
+            eventList.appendChild(li);
+            if (event.indexOf('New gif available!') > 0) {
+              refreshPic();
+              setPictureProgressBar(100);
+            }
+            if (event.indexOf('Warming up') > 0) startPictureProgressBar(900);
+            if (event.indexOf('Will reward') > 0) startTreatProgressBar(3000);
+            if (event.indexOf('Mic triggered') > 0) startTreatProgressBar(3000);
+            if (event.indexOf('Mic timer killed') > 0) setTreatProgressBar(0);
+
+            li.innerHTML += event;
           });
         }
         setTimeout(pollForEvents,5000);
