@@ -17,19 +17,19 @@
 <div class="container">
   <div class="col-sm-3">
     <div class="row" style="padding-bottom:5px;">
-      <button class="btn btn-success" onclick="recordGif()" style="width:200px; float:left">
+      <button class="btn btn-success" onclick="recordGif()" style="width:225px; float:left">
         Get a new gif
         <span class="glyphicon glyphicon-camera" style="float:right" />
       </button>
     </div>
     <div class="row" style="padding-bottom:5px;">
-      <button onclick="rewardNow()" class="btn btn-success" style="width:200px; float:left" >
+      <button onclick="rewardNow()" class="btn btn-success" style="width:225px; float:left" >
         Reward now
         <span class="glyphicon glyphicon-bell" style="float:right" />
       </button>
     </div>
     <div class="row" style="padding-bottom:5px;">
-      <button onclick="rewardAfter()" class="btn btn-success" style="width:200px; float:left" >
+      <button onclick="rewardAfter()" class="btn btn-success" style="width:225px; float:left" >
         Reward after
         <span id="rewardAfterMinutes">5</span>
         minutes
@@ -37,13 +37,13 @@
       </button>
     </div>
     <div class="row" style="padding-bottom:5px;">
-      <button onclick="flipLargeTreatFlag()" class="btn btn-warning" id="largeTreatFlag" style="width:200px; float:left">
+      <button onclick="flipLargeTreatFlag()" class="btn btn-warning" id="largeTreatFlag" style="width:225px; float:left">
         <span id="largeTreatLabel">Large Treats Disabled</span>
         <span id="largeTreatStar" class="glyphicon glyphicon-star-empty" style="float:right" />
       </button>
     </div>
     <div class="row" style="padding-bottom:5px;">
-      <button onclick="kill()" class="btn btn-danger" style="width:200px; float:left">
+      <button onclick="kill()" class="btn btn-danger" style="width:225px; float:left">
         Kill Active Rewards
         <span class="glyphicon glyphicon-remove" style="float:right" />
       </button>
@@ -53,9 +53,31 @@
     </div>
   </div>
   <div class="col-sm-9">
-    <div class="row" style="padding-bottom:5px;">
-      <h4 id="loading" class="media-heading">Latest Gif</h4>
-      <img id="pic" class="media-object"  width="600" height="400"/>
+    <div class="row" style="height:20px">
+      <div class="col-sm-12" id="pic-progress-label" >
+        <span/>
+      </div>
+    </div>
+    <div class="row" style="width:630px; height:20px">
+      <div class="col-sm-12">
+        <div id="pic-progress" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+          <span id="current-progress"></span>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="height:20px">
+      <div class="col-sm-12" id="treat-progress-label" >
+        <span/>
+      </div>
+    </div>
+    <div class="row" style="width:630px; height:23px">
+      <div class="col-sm-12">
+        <div id="treat-progress" class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+          <span id="current-treat-progress"></span>
+        </div>
+      </div>
+    <div class="row">
+      <img id="pic" class="media-object"  style="margin:30px" width="600" height="400"/>
     </div>
     <div class="row" id="eventList">
     </div>
@@ -80,8 +102,57 @@
     }
   }
 
+  var currentPicIntervalId;
+  startPictureProgressBar = function(ms){
+    $("#pic-progress-label").text("Gif Capture Progress:");
+    clearInterval(currentPicIntervalId);
+    var current_progress = 0;
+    currentPicIntervalId = setInterval(function() {
+      current_progress += 1;
+      $("#pic-progress")
+      .css("width", current_progress + "%")
+      .attr("aria-valuenow", current_progress)
+      .text(current_progress + "%");
+      if (current_progress >= 100)
+          clearInterval(currentPicIntervalId);
+    }, ms);
+  }
+
+  setPictureProgressBar = function(value){
+    clearInterval(currentPicIntervalId);
+    $("#pic-progress")
+      .css("width", value + "%")
+      .attr("aria-valuenow", value)
+      .text(value + "%");
+  }
+  setPictureProgressBar(0);
+
+  var currentTreatIntervalId;
+  startTreatProgressBar = function(ms){
+    $("#treat-progress-label").text("Treat Progress:");
+    clearInterval(currentTreatIntervalId);
+    var current_progress = 0;
+    currentTreatIntervalId = setInterval(function() {
+      current_progress += 1;
+      $("#treat-progress")
+      .css("width", current_progress + "%")
+      .attr("aria-valuenow", current_progress)
+      .text(current_progress + "%");
+      if (current_progress >= 100)
+          clearInterval(currentTreatIntervalId);
+    }, ms);
+  }
+
+  setTreatProgressBar = function(value){
+    clearInterval(currentTreatIntervalId);
+    $("#treat-progress")
+      .css("width", value + "%")
+      .attr("aria-valuenow", value)
+      .text(value + "%");
+  }
+  setTreatProgressBar(0);
+
   recordGif = function() {
-     $("#loading").text("Refreshing Image...");
      $.ajax({type: "POST",url: host + "api/recordGif"});
   }
 
@@ -97,10 +168,8 @@
   // Image management
   $("#pirate").attr("src", host + "api/gifArchive/pirate.gif");
   $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
-  pic.onload = function () { $("#loading").text("Latest Gif"); }
 
   refreshPic = function() {
-    $("#loading").text("Refreshing Image...");
     $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
   }
 
@@ -113,12 +182,18 @@
     $.get(host + "api/events", function(data) {
         if (data) {
           data.forEach(function (event) {
-          let li = document.createElement('li');
-          eventList.appendChild(li);
-          if (event.indexOf('New gif available!') > 0) {
-            refreshPic();
-          }
-          li.innerHTML += event;
+            let li = document.createElement('li');
+            eventList.appendChild(li);
+            if (event.indexOf('New gif available!') > 0) {
+              refreshPic();
+              setPictureProgressBar(100);
+            }
+            if (event.indexOf('Warming up') > 0) startPictureProgressBar(900);
+            if (event.indexOf('Will reward') > 0) startTreatProgressBar(3000);
+            if (event.indexOf('Mic triggered') > 0) startTreatProgressBar(3000);
+            if (event.indexOf('Mic timer killed') > 0) setTreatProgressBar(0);
+
+            li.innerHTML += event;
           });
         }
         setTimeout(pollForEvents,5000);
