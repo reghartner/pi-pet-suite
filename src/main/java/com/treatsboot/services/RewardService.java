@@ -55,7 +55,7 @@ public class RewardService
         rewardInProgress = true;
         String filename = getGifName();
         camera.recordAndSaveGif(filename);
-        treats.treat(smallTreat, 1000);
+        treats.treat(smallTreat, 3000);
         rewardInProgress = false;
     }
 
