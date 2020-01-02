@@ -105,6 +105,7 @@ public class RewardService
     public void kill()
     {
         this.kill = true;
+        this.rewardInProgress = false;
         mic.kill();
     }
 
