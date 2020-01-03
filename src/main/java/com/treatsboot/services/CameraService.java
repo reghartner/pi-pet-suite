@@ -85,7 +85,7 @@ public class CameraService
             .width(600)
             .height(400)
             .encoding(Encoding.GIF)
-            .quality(50)
+            .quality(65)
             .rotation(ROTATION_DEGREES);
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
@@ -166,7 +166,7 @@ public class CameraService
             .height(400)
             .encoding(Encoding.JPEG)
             .quality(50)
-            .rotation(90);
+            .rotation(ROTATION_DEGREES);
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
 
