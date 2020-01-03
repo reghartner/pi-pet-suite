@@ -172,7 +172,7 @@
   refreshPic = function() {
     $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
   }
-
+  pic.onload = function () { setPictureProgressBar(100); }
   // Event polling
 
   eventList = document.createElement('ul');
@@ -186,7 +186,6 @@
             eventList.appendChild(li);
             if (event.indexOf('New gif available!') > 0) {
               refreshPic();
-              setPictureProgressBar(100);
             }
             if (event.indexOf('Warming up') > 0) startPictureProgressBar(900);
             if (event.indexOf('Will reward') > 0) startTreatProgressBar(3000);
