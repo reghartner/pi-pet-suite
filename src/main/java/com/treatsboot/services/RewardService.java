@@ -55,7 +55,7 @@ public class RewardService
         rewardInProgress = true;
         String filename = getGifName();
         camera.recordAndSaveGif(filename);
-        treats.treat(smallTreat, 1000);
+        treats.treat(smallTreat, 3000);
         rewardInProgress = false;
     }
 
@@ -105,6 +105,7 @@ public class RewardService
     public void kill()
     {
         this.kill = true;
+        this.rewardInProgress = false;
         mic.kill();
     }
 
