@@ -24,6 +24,7 @@ import static uk.co.caprica.picam.CameraConfiguration.cameraConfiguration;
 @Service
 public class CameraService
 {
+    private static int ROTATION_DEGREES = 180;
     private MediaRepository mediaRepository;
     private LightService lightService;
     private EventRepository eventRepository;
@@ -53,7 +54,7 @@ public class CameraService
             .encoding(Encoding.JPEG)
             .quality(90)
             .delay(2000)
-            .rotation(0);
+            .rotation(ROTATION_DEGREES);
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
 
@@ -85,7 +86,7 @@ public class CameraService
             .height(400)
             .encoding(Encoding.GIF)
             .quality(50)
-            .rotation(90);
+            .rotation(ROTATION_DEGREES);
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
 
