@@ -55,7 +55,7 @@
   <div class="col-sm-9">
     <div class="row" style="height:20px">
       <div class="col-sm-12" id="pic-progress-label" >
-        <span/>
+        <span>Gif Capture Progress:</span>
       </div>
     </div>
     <div class="row" style="width:630px; height:20px">
@@ -67,7 +67,7 @@
     </div>
     <div class="row" style="height:20px">
       <div class="col-sm-12" id="treat-progress-label" >
-        <span/>
+        <span>Treat Progress:</span>
       </div>
     </div>
     <div class="row" style="width:630px; height:23px">
@@ -104,7 +104,7 @@
 
   var currentPicIntervalId;
   startPictureProgressBar = function(ms){
-    $("#pic-progress-label").text("Gif Capture Progress:");
+  
     clearInterval(currentPicIntervalId);
     var current_progress = 0;
     currentPicIntervalId = setInterval(function() {
@@ -129,7 +129,6 @@
 
   var currentTreatIntervalId;
   startTreatProgressBar = function(ms){
-    $("#treat-progress-label").text("Treat Progress:");
     clearInterval(currentTreatIntervalId);
     var current_progress = 0;
     currentTreatIntervalId = setInterval(function() {
