@@ -53,7 +53,7 @@ public class CameraService
             .encoding(Encoding.JPEG)
             .quality(90)
             .delay(2000)
-            .rotation(90);
+            .rotation(0);
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
 
