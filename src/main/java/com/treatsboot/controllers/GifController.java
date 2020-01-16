@@ -54,14 +54,25 @@ public class GifController
         return new HttpEntity<>(picBytes);
     }
 
-    @ApiOperation(value = "Asynchronously records a GIF and returns the filename for retrieval")
+    @ApiOperation(value = "Asynchronously records an animated GIF and returns the filename for retrieval")
     @RequestMapping(
         value = "/recordGif",
         method = RequestMethod.POST)
     public HttpEntity<String> recordGif() throws Exception
     {
         String filename = format("%s_recordGif.gif", Date.from(Instant.now()));
-        cameraService.recordAndSaveGif(filename);
+        cameraService.recordAndSaveGif(filename, 100);
+        return new HttpEntity<>(filename);
+    }
+
+    @ApiOperation(value = "Asynchronously records a static GIF and returns the filename for retrieval")
+    @RequestMapping(
+        value = "/snapGif",
+        method = RequestMethod.POST)
+    public HttpEntity<String> snapGif() throws Exception
+    {
+        String filename = format("%s_snapGif.gif", Date.from(Instant.now()));
+        cameraService.recordAndSaveGif(filename, 1);
         return new HttpEntity<>(filename);
     }
 

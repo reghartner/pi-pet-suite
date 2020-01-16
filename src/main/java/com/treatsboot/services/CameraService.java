@@ -75,10 +75,9 @@ public class CameraService
      * @throws Exception
      */
     @Async
-    public void recordAndSaveGif(String filename) throws Exception
+    public void recordAndSaveGif(String filename, int numFrames) throws Exception
     {
         int msBetweenFrames = 200;
-        int numFrames = 100;
 
         CameraConfiguration config = cameraConfiguration()
             .width(600)

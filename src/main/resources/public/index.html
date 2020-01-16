@@ -18,7 +18,13 @@
   <div class="col-sm-3">
     <div class="row" style="padding-bottom:5px;">
       <button class="btn btn-success" onclick="recordGif()" style="width:225px; float:left">
-        Get a new gif
+        Fetch new video
+        <span class="glyphicon glyphicon-camera" style="float:right" />
+      </button>
+    </div>
+    <div class="row" style="padding-bottom:5px;">
+      <button class="btn btn-success" onclick="getPic()" style="width:225px; float:left">
+        Fetch new image
         <span class="glyphicon glyphicon-camera" style="float:right" />
       </button>
     </div>
@@ -82,7 +88,9 @@
     <div class="row" id="eventList">
     </div>
   </div>
+  </div>
 </div>
+
 
 <script language="JavaScript" >
   var host = window.location;
@@ -154,6 +162,10 @@
 
   recordGif = function() {
      $.ajax({type: "POST",url: host + "api/recordGif"});
+  }
+
+  getPic = function() {
+     $.ajax({type: "POST",url: host + "api/snapGif"});
   }
 
   rewardNow = function() { $.ajax({ type: "POST", url: host + "api/reward?smallTreat= " + !largeTreat }); }
