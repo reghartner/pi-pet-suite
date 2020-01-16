@@ -93,7 +93,7 @@ public class RewardService
         }
         else
         {
-            eventRepository.push(format("Times up.  Total treats dispensed: " + treatsDispensed));
+            eventRepository.push(format("Times up.  Total treats dispensed: %s", treatsDispensed));
         }
 
         rewardInProgress = false;
@@ -145,7 +145,7 @@ public class RewardService
     {
         long endTime = new Date().getTime();
         eventRepository.push(format(
-            "He made it.  It took him %s until he was silent for %s minutes. % treat coming!",
+            "He made it.  It took him %s until he was silent for %s minutes. %s treat coming!",
             getPrettyDuration(endTime-startTime),
             minutes,
             smallTreat ? "Small" : "Big"));
