@@ -70,6 +70,7 @@ public class MicrophoneService implements LineListener {
                 microphone.stop();
                 microphone.close();
                 callback.call();
+                return;
             }
             else
             {
