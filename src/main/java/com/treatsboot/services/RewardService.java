@@ -134,7 +134,6 @@ public class RewardService
             minutes));
 
         mic.callbackAfterNMinutesOfSilence(minutes, this::silenceCallback);
-        rewardInProgress = false;
     }
 
     /**
@@ -149,6 +148,7 @@ public class RewardService
             getPrettyDuration(endTime-startTime),
             minutes,
             smallTreat ? "Small" : "Big"));
+        rewardInProgress = false;
         dispenseAndRecord(smallTreat);
         return null;
     }
