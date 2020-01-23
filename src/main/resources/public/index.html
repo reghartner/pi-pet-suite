@@ -54,9 +54,6 @@
         <span class="glyphicon glyphicon-remove" style="float:right" />
       </button>
     </div>
-    <div class="row" style="padding-bottom:5px;">
-      <img id="pirate" height="400"/>
-    </div>
   </div>
   <div class="col-sm-9">
     <div class="row" style="height:20px">
@@ -178,7 +175,6 @@
   kill = function() { $.ajax({ type: "POST", url: host + "api/reward/kill" }); }
 
   // Image management
-  $("#pirate").attr("src", host + "api/gifArchive/pirate.gif");
   $("#pic").attr("src", host + "api/gifArchive/latest?" + new Date().getTime());
 
   refreshPic = function() {
