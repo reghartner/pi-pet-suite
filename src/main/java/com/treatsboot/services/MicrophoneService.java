@@ -17,7 +17,7 @@ import static com.treatsboot.utilities.DurationHelpers.getPrettyDuration;
 @Service
 public class MicrophoneService implements LineListener {
 
-    private static int NOISE_THRESHOLD = 4000;
+    private static int NOISE_THRESHOLD = 4500;
     private Microphone microphone;
     private EventRepository eventRepository;
 
