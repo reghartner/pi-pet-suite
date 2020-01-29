@@ -27,6 +27,7 @@ public class CameraService
     private MediaRepository mediaRepository;
     private LightService lightService;
     private EventRepository eventRepository;
+    private final int ROTATION_DEGREES = 180;
 
     @Autowired
     public CameraService(
@@ -53,7 +54,7 @@ public class CameraService
             .encoding(Encoding.JPEG)
             .quality(90)
             .delay(2000)
-            .rotation(90);
+            .rotation(ROTATION_DEGREES);
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
 
@@ -84,7 +85,7 @@ public class CameraService
             .height(400)
             .encoding(Encoding.GIF)
             .quality(50)
-            .rotation(90);
+            .rotation(ROTATION_DEGREES);
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
 
