@@ -54,7 +54,7 @@ public class RewardService
         {
             eventRepository.push("%s treat coming!", smallTreat ? "Small" : "Big");
             rewardInProgress = false;
-            dispenseAndRecord(smallTreat);
+            treats.treat(smallTreat);
             return null;
         });
     }
