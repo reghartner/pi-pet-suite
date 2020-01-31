@@ -108,6 +108,7 @@ public class CameraService
         catch (Exception e)
         {
             eventRepository.push("There seems to be an issue with the camera... %s", e.getMessage());
+            actionToRecord.call();
             lightService.off();
             return;
         }
