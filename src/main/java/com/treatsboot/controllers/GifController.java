@@ -61,7 +61,7 @@ public class GifController
     public HttpEntity<String> recordGif() throws Exception
     {
         String filename = format("%s_recordGif.gif", Date.from(Instant.now()));
-        cameraService.recordAndSaveGif(filename, 100);
+        cameraService.recordAndSaveGif(filename, 100, () -> null);
         return new HttpEntity<>(filename);
     }
 
@@ -72,7 +72,7 @@ public class GifController
     public HttpEntity<String> snapGif() throws Exception
     {
         String filename = format("%s_snapGif.gif", Date.from(Instant.now()));
-        cameraService.recordAndSaveGif(filename, 1);
+        cameraService.recordAndSaveGif(filename, 1, () -> null);
         return new HttpEntity<>(filename);
     }
 
