@@ -39,6 +39,16 @@ public class LightService
     @Async
     public void off() throws IOException
     {
+        try
+        {
+            // delay a bit for fudge factor
+            Thread.sleep(2000);
+        }
+        catch (InterruptedException e)
+        {
+            // don't care if this fails, probably just get a dark image for a second
+        }
+
         eventRepository.push("Turning off light...");
         ProcessBuilder pb = new ProcessBuilder("./lightOff.sh");
         pb.start();
