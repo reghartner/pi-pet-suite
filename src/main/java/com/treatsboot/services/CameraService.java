@@ -62,7 +62,6 @@ public class CameraService
         try(Camera camera = new Camera(config))
         {
             camera.takePicture(handler);
-            lightService.off();
             return handler.result();
         }
         finally
