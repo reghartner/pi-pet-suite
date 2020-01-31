@@ -18,6 +18,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import static uk.co.caprica.picam.CameraConfiguration.cameraConfiguration;
 
@@ -71,12 +72,12 @@ public class CameraService
     }
 
     /**
-     * record a gif and save it
+     * record a gif and save it.  Executes the callback as soon as capture starts.
      * @return
      * @throws Exception
      */
     @Async
-    public void recordAndSaveGif(String filename, int numFrames) throws Exception
+    public void recordAndSaveGif(String filename, int numFrames, Callable actionToRecord) throws Exception
     {
         int msBetweenFrames = 200;
 
@@ -93,12 +94,10 @@ public class CameraService
 
         try(Camera camera = new Camera(config))
         {
+            // This takes like 5 seconds which gives the camera time to initialize
             lightService.on();
-
-            eventRepository.push("Warming up camera...");
-            Thread.sleep(3000);
-
             eventRepository.push("Starting capture...");
+            actionToRecord.call();
             for (int i = 0; i < numFrames; i++)
             {
                 camera.takePicture(handler);

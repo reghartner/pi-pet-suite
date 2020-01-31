@@ -19,12 +19,21 @@ public class LightService
         this.eventRepository = eventRepository;
     }
 
-    @Async
     public void on() throws IOException
     {
-        eventRepository.push("Turning on light...");
+        eventRepository.push("Turning on light.  This takes a few seconds...");
+
         ProcessBuilder pb = new ProcessBuilder("./lightOn.sh");
         pb.start();
+        try
+        {
+            // this takes forever
+            Thread.sleep(5000);
+        }
+        catch (InterruptedException e)
+        {
+            // don't care if this fails, probably just get a dark image for a second
+        }
     }
 
     @Async

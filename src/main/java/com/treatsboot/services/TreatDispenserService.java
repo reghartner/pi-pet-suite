@@ -130,11 +130,8 @@ public class TreatDispenserService
      * of the motor is 0.09 degrees in half step method.
      */
     @Async
-    public void treat(boolean smallTreat, int delayMs) throws InterruptedException
+    public void treat(boolean smallTreat) throws InterruptedException
     {
-        // We might delay a bit to sync the motor action with the camera
-        Thread.sleep(delayMs);
-
         if (smallTreat)
         {
             dispense(DEFAULT_ROTATION_DEGREES);
