@@ -16,7 +16,7 @@
     <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-logs}/${springAppName}}"/>
 
     <!-- Set camera to log only at debug level so we can ignore most of their logging -->
-    <logger name="uk.co.caprica.picam.Camera" level="debug"/>
+    <logger name="uk.co.caprica.picam.Camera" level="DEBUG"/>
 
     <!-- Appender to log to console in JSON format -->
     <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
