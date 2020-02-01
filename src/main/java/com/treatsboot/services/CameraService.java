@@ -29,6 +29,8 @@ public class CameraService
     private LightService lightService;
     private EventRepository eventRepository;
     private final int ROTATION_DEGREES = 180;
+    private final int WARMUP_DELAY_MS = 2000;
+
 
     @Autowired
     public CameraService(
@@ -48,19 +50,19 @@ public class CameraService
 
     private byte[] snap() throws Exception
     {
-        lightService.on();
         CameraConfiguration config = cameraConfiguration()
             .width(1024)
             .height(768)
             .encoding(Encoding.JPEG)
             .quality(90)
-            .delay(2000)
+            .delay(WARMUP_DELAY_MS)
             .rotation(ROTATION_DEGREES);
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
 
         try(Camera camera = new Camera(config))
         {
+            lightService.on();
             camera.takePicture(handler);
             return handler.result();
         }
@@ -85,16 +87,16 @@ public class CameraService
             .height(400)
             .encoding(Encoding.GIF)
             .quality(50)
+            .delay(WARMUP_DELAY_MS)
             .rotation(ROTATION_DEGREES);
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
 
         List<byte[]> imageBytesList = new ArrayList<>();
 
+        lightService.on();
         try(Camera camera = new Camera(config))
         {
-            // This takes like 5 seconds which gives the camera time to initialize
-            lightService.on();
             eventRepository.push("Starting capture...");
             actionToRecord.call();
             for (int i = 0; i < numFrames; i++)
