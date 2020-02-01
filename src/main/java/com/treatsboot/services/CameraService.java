@@ -30,6 +30,8 @@ public class CameraService
     private EventRepository eventRepository;
     private final int ROTATION_DEGREES = 180;
     private final int WARMUP_DELAY_MS = 2000;
+    private final int GIF_IMAGE_TYPE = 5;
+    private final boolean LOOP_GIF = true;
 
 
     @Autowired
@@ -60,11 +62,59 @@ public class CameraService
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
 
-        try(Camera camera = new Camera(config))
+        try(Camera camera = getCamera(config))
         {
             lightService.on();
             camera.takePicture(handler);
             return handler.result();
+        }
+        finally
+        {
+            lightService.off();
+        }
+    }
+
+    private Camera getCamera(CameraConfiguration config)
+    {
+        eventRepository.push("Warming up camera...");
+        return new Camera(config);
+    }
+
+    /**
+     * Turns on the lights, starts recording, then executes the action
+     * @param config
+     * @param handler
+     * @param imageBytesList
+     * @param actionToRecord
+     * @param numFrames
+     * @throws Exception
+     */
+    private void recordAction(
+        CameraConfiguration config,
+        ByteArrayPictureCaptureHandler handler,
+        List<byte[]> imageBytesList,
+        Callable actionToRecord,
+        int numFrames) throws Exception
+    {
+        lightService.on();
+        try(Camera camera = new Camera(config))
+        {
+            eventRepository.push("Warming up camera...");
+            Thread.sleep(WARMUP_DELAY_MS);
+            eventRepository.push("Starting capture...");
+            actionToRecord.call();
+            for (int i = 0; i < numFrames; i++)
+            {
+                camera.takePicture(handler);
+                imageBytesList.add(handler.result());
+            }
+
+            lightService.off();
+        }
+        catch (Exception e)
+        {
+            eventRepository.push("There seems to be an issue with the camera... %s", e.getMessage());
+            actionToRecord.call();
         }
         finally
         {
@@ -87,33 +137,12 @@ public class CameraService
             .height(400)
             .encoding(Encoding.GIF)
             .quality(50)
-            .delay(WARMUP_DELAY_MS)
             .rotation(ROTATION_DEGREES);
 
         ByteArrayPictureCaptureHandler handler = new ByteArrayPictureCaptureHandler();
-
         List<byte[]> imageBytesList = new ArrayList<>();
 
-        lightService.on();
-        try(Camera camera = new Camera(config))
-        {
-            eventRepository.push("Starting capture...");
-            actionToRecord.call();
-            for (int i = 0; i < numFrames; i++)
-            {
-                camera.takePicture(handler);
-                imageBytesList.add(handler.result());
-            }
-
-            lightService.off();
-        }
-        catch (Exception e)
-        {
-            eventRepository.push("There seems to be an issue with the camera... %s", e.getMessage());
-            actionToRecord.call();
-            lightService.off();
-            return;
-        }
+        recordAction(config, handler, imageBytesList, actionToRecord, numFrames);
 
         try
         {
@@ -121,7 +150,7 @@ public class CameraService
 
             ByteArrayOutputStream gifByteStream = new ByteArrayOutputStream();
             ImageOutputStream imageOutputStream = new FileImageOutputStream(new File(mediaRepository.getFullFilename(filename)));
-            GifSequenceWriter writer = new GifSequenceWriter(imageOutputStream, 5, msBetweenFrames, true);
+            GifSequenceWriter writer = new GifSequenceWriter(imageOutputStream, GIF_IMAGE_TYPE, msBetweenFrames, LOOP_GIF);
 
             for(int i = 0; i < imageBytesList.size(); i++)
             {
