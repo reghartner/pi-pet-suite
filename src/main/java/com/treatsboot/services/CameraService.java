@@ -57,6 +57,7 @@ public class CameraService
             .height(768)
             .encoding(Encoding.JPEG)
             .quality(90)
+            .brightness(80)
             .delay(WARMUP_DELAY_MS)
             .rotation(ROTATION_DEGREES);
 
@@ -99,9 +100,9 @@ public class CameraService
         lightService.on();
         try(Camera camera = new Camera(config))
         {
-            eventRepository.push("Warming up camera...");
             Thread.sleep(WARMUP_DELAY_MS);
             eventRepository.push("Starting capture...");
+
             actionToRecord.call();
             for (int i = 0; i < numFrames; i++)
             {

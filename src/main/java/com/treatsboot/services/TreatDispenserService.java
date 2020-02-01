@@ -130,7 +130,7 @@ public class TreatDispenserService
      * of the motor is 0.09 degrees in half step method.
      */
     @Async
-    public void treat(boolean smallTreat) throws InterruptedException
+    public void treat(boolean smallTreat)
     {
         if (smallTreat)
         {
