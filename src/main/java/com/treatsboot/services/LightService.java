@@ -21,6 +21,7 @@ public class LightService
 
     public void on() throws IOException
     {
+        /*
         eventRepository.push("Turning on light.  This takes a few seconds...");
 
         ProcessBuilder pb = new ProcessBuilder("./lightOn.sh");
@@ -33,12 +34,13 @@ public class LightService
         catch (InterruptedException e)
         {
             // don't care if this fails, probably just get a dark image for a second
-        }
+        }*/
     }
 
     @Async
     public void off() throws IOException
     {
+        /*
         try
         {
             // delay a bit for fudge factor
@@ -52,5 +54,6 @@ public class LightService
         eventRepository.push("Turning off light...");
         ProcessBuilder pb = new ProcessBuilder("./lightOff.sh");
         pb.start();
+        */
     }
 }
