@@ -15,11 +15,14 @@
     <springProperty scope="context" name="springAppName" source="spring.application.name"/>
     <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-logs}/${springAppName}}"/>
 
+    <!-- Set camera to log only at debug level so we can ignore most of their logging -->
+    <logger name="uk.co.caprica.picam.Camera" level="debug"/>
+
     <!-- Appender to log to console in JSON format -->
     <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <!-- Minimum logging level to be presented in the console logs-->
-            <level>DEBUG</level>
+            <level>INFO</level>
         </filter>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
@@ -63,7 +66,7 @@
     <appender name="CONSOLE_TEXT" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <!-- Minimum logging level to be presented in the console logs-->
-            <level>DEBUG</level>
+            <level>INFO</level>
         </filter>
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
