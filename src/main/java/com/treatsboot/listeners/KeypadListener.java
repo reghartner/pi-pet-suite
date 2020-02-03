@@ -110,15 +110,10 @@ public class KeypadListener
             {
                 rewardService.dispenseAndRecord(true);
             }
-            return;
         }
         catch (Exception e)
         {
             System.out.println(format("Not an integer: %s", pressed));
-        }
-        finally
-        {
-
         }
     }
 
