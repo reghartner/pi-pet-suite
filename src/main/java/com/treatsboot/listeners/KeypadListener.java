@@ -63,7 +63,7 @@ public class KeypadListener
      * therefore a mapping to a key on the keypad.
      */
     private void findOutput() {
-        // now test the inuts by setting the outputs from high to low
+        // now test the inputs by setting the outputs from high to low
         // one by one
         for (int myO = 0; myO < theOutputs.length; myO++) {
             for (final GpioPinDigitalOutput myTheOutput : theOutputs) {
@@ -96,7 +96,7 @@ public class KeypadListener
     /**
      * Handle the input from the keypad
      */
-    private synchronized void handleInput()
+    private void handleInput()
     {
         char pressed = keypad[theLin - 1][theCol];
         System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
