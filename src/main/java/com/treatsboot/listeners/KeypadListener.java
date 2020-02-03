@@ -95,7 +95,7 @@ public class KeypadListener
         char pressed = keypad[theLin - 1][theCol];
         if (Integer.valueOf(pressed) != null)
         {
-            this.minutes = pressed;
+            this.minutes = Integer.valueOf(pressed);
         }
         if (String.valueOf(pressed).equals("*"))
         {
