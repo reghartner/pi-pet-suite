@@ -103,7 +103,7 @@ public class KeypadListener
 
         if (Integer.valueOf(pressed) != null)
         {
-            this.minutes = Integer.valueOf(pressed);
+            this.minutes = Integer.parseInt("" + pressed);
             System.out.println(format("Integer pressed: %s, minutes: %s", pressed, minutes));
         }
 
