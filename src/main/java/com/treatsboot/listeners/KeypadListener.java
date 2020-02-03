@@ -78,7 +78,7 @@ public class KeypadListener
                 handleInput();
                 try
                 {
-                    Thread.sleep(200);
+                    Thread.sleep(500);
                 }
                 catch (InterruptedException e) {
 
@@ -104,11 +104,11 @@ public class KeypadListener
             System.out.println(format("Pressed: %s", intInput));
             if(intInput == 0)
             {
-                rewardService.rewardForSilence(intInput, true);
+                rewardService.dispenseAndRecord(true);
             }
             else if (intInput > 0)
             {
-                rewardService.dispenseAndRecord(true);
+                rewardService.rewardForSilence(intInput, true);
             }
         }
         catch (Exception e)
