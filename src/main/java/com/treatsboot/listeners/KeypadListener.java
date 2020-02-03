@@ -49,7 +49,8 @@ public class KeypadListener
         this.rewardService = rewardService;
         this.cameraService = cameraService;
         initMapping();
-        eventLoop();
+
+        new Thread(this::eventLoop);
     }
 
     /**
