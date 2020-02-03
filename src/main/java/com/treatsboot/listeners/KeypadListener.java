@@ -6,6 +6,8 @@ import com.treatsboot.services.RewardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static java.lang.String.format;
+
 @Service
 public class KeypadListener
 {
@@ -97,7 +99,8 @@ public class KeypadListener
     private synchronized void handleInput()
     {
         char pressed = keypad[theLin - 1][theCol];
-        System.out.println("Ley pressed: " + pressed);
+        System.out.println(format("Key pressed: {}, minutes: {}", pressed, minutes));
+
         if (Integer.valueOf(pressed) != null && Integer.valueOf(pressed) <= 9)
         {
             this.minutes = Integer.valueOf(pressed);

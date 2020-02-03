@@ -41,6 +41,7 @@ public class RewardService
      * @return
      * @throws Exception
      */
+    @Async
     public void dispenseAndRecord(boolean smallTreat) throws Exception
     {
         if (rewardInProgress)
