@@ -106,23 +106,22 @@ public class KeypadListener
             && Integer.valueOf(pressed) <= 9)
         {
             this.minutes = Integer.valueOf(pressed);
+            System.out.println(format("Integer pressed: %s, minutes: %s", pressed, minutes));
         }
 
         System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
 
         if (String.valueOf(pressed).equals("*"))
         {
-            System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
             try
             {
+                System.out.println(format("* pressed: %s, minutes: %s", pressed, minutes));
                 if(minutes == 0)
                 {
-                    System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
                     rewardService.dispenseAndRecord(true);
                 }
                 else
                 {
-                    System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
                     rewardService.rewardForSilence(minutes, true);
                 }
             }
