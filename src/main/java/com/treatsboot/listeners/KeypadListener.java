@@ -71,18 +71,22 @@ public class KeypadListener
             theOutputs[myO].low();
 
             // input found?
-            if (theInput.isLow()) {
+            if (theInput.isLow())
+            {
                 theCol = myO;
                 handleInput();
-                try {
+                try
+                {
                     Thread.sleep(200);
-                } catch (InterruptedException e) {
                 }
-                break;
+                catch (InterruptedException e) {
+
+                }
             }
         }
 
-        for (final GpioPinDigitalOutput myTheOutput : theOutputs) {
+        for (final GpioPinDigitalOutput myTheOutput : theOutputs)
+        {
             myTheOutput.low();
         }
     }
@@ -93,6 +97,7 @@ public class KeypadListener
     private synchronized void handleInput()
     {
         char pressed = keypad[theLin - 1][theCol];
+        System.out.println("Ley pressed: " + pressed);
         if (Integer.valueOf(pressed) != null && Integer.valueOf(pressed) <= 9)
         {
             this.minutes = Integer.valueOf(pressed);
@@ -105,7 +110,10 @@ public class KeypadListener
                 {
                     rewardService.dispenseAndRecord(true);
                 }
-                rewardService.rewardForSilence(minutes, true);
+                else
+                {
+                    rewardService.rewardForSilence(minutes, true);
+                }
             }
             catch (Exception e)
             {
