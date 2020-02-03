@@ -45,8 +45,6 @@ public class KeypadListener
     private int theCol;
     private RewardService rewardService;
 
-    private int minutes = 0;
-
     /**
      * Instantiates a new piezo keypad.
      */
@@ -100,14 +98,28 @@ public class KeypadListener
     private void handleInput()
     {
         char pressed = keypad[theLin - 1][theCol];
-
-        if (Integer.valueOf(pressed) != null)
+        try
         {
-            this.minutes = Integer.parseInt("" + pressed);
-            System.out.println(format("Integer pressed: %s, minutes: %s", pressed, minutes));
+            Integer intInput = Integer.parseInt("" + pressed);
+            System.out.println(format("Pressed: %s", intInput));
+            if(intInput == 0)
+            {
+                rewardService.rewardForSilence(intInput, true);
+            }
+            else if (intInput > 0)
+            {
+                rewardService.dispenseAndRecord(true);
+            }
+            return;
         }
+        catch (Exception e)
+        {
+            System.out.println(format("Not an integer: %s", pressed));
+        }
+        finally
+        {
 
-        System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
+        }
     }
 
     private void initListeners()
