@@ -101,11 +101,15 @@ public class KeypadListener
         {
             try
             {
+                if(minutes == 0)
+                {
+                    rewardService.dispenseAndRecord(true);
+                }
                 rewardService.rewardForSilence(minutes, true);
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                System.out.println(e);
             }
         }
     }
