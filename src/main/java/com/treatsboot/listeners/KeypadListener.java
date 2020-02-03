@@ -101,7 +101,9 @@ public class KeypadListener
         char pressed = keypad[theLin - 1][theCol];
         System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
 
-        if (Integer.valueOf(pressed) != null && Integer.valueOf(pressed) <= 9)
+        if (Integer.valueOf(pressed) != null
+            && Integer.valueOf(pressed) >= 0
+            && Integer.valueOf(pressed) <= 9)
         {
             this.minutes = Integer.valueOf(pressed);
         }
