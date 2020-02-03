@@ -1,8 +1,8 @@
 package com.treatsboot.listeners;
 
 import com.pi4j.io.gpio.*;
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.beans.PropertyChangeEvent;
@@ -56,6 +56,7 @@ public class KeypadListener
     /**
      * Instantiates a new piezo keypad.
      */
+    @Autowired
     public KeypadListener() {
         initListeners();
     }
@@ -119,26 +120,18 @@ public class KeypadListener
                 findOutput();
             }
         });
-        thePin2.addListener(new GpioPinListenerDigital() {
-            @Override
-            public void handleGpioPinDigitalStateChangeEvent(
-                final GpioPinDigitalStateChangeEvent aEvent) {
-                if (aEvent.getState() == PinState.LOW) {
-                    theInput = thePin2;
-                    theLin = 2;
-                    findOutput();
-                }
+        thePin2.addListener((GpioPinListenerDigital) aEvent -> {
+            if (aEvent.getState() == PinState.LOW) {
+                theInput = thePin2;
+                theLin = 2;
+                findOutput();
             }
         });
-        thePin3.addListener(new GpioPinListenerDigital() {
-            @Override
-            public void handleGpioPinDigitalStateChangeEvent(
-                final GpioPinDigitalStateChangeEvent aEvent) {
-                if (aEvent.getState() == PinState.LOW) {
-                    theInput = thePin3;
-                    theLin = 3;
-                    findOutput();
-                }
+        thePin3.addListener((GpioPinListenerDigital) aEvent -> {
+            if (aEvent.getState() == PinState.LOW) {
+                theInput = thePin3;
+                theLin = 3;
+                findOutput();
             }
         });
         thePin4.addListener((GpioPinListenerDigital) aEvent -> {
@@ -160,6 +153,5 @@ public class KeypadListener
 
     public void addChangeListener(PropertyChangeListener newListener) {
         listener.add(newListener);
-    }
     }
 }
