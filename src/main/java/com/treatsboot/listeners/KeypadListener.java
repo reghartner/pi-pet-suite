@@ -1,12 +1,15 @@
 package com.treatsboot.listeners;
 
 import com.pi4j.io.gpio.*;
-import com.treatsboot.services.CameraService;
-import com.treatsboot.services.RewardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
+import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import org.springframework.stereotype.Service;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class KeypadListener
@@ -17,149 +20,146 @@ public class KeypadListener
     /** The gpio. */
     private final GpioController theGpio = GpioFactory.getInstance();
 
-    private static final Pin PIN_OUT_1 = RaspiPin.GPIO_11;
-    private static final Pin PIN_OUT_2 = RaspiPin.GPIO_10;
-    private static final Pin PIN_IN_1 = RaspiPin.GPIO_06;
-    private static final Pin PIN_IN_2 = RaspiPin.GPIO_05;
-    private static final Pin PIN_IN_3 = RaspiPin.GPIO_04;
-    private static final Pin PIN_IN_4 = RaspiPin.GPIO_01;
-    private static final Pin PIN_IN_5 = RaspiPin.GPIO_16;
-    private static final Pin PIN_IN_6 = RaspiPin.GPIO_15;
+    private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
+    public static final String KEY = "key";
+    private char keyPressed;
 
-    private GpioPinDigitalOutput out1 = theGpio.provisionDigitalOutputPin(PIN_OUT_1, PinState.LOW);
-    private GpioPinDigitalOutput out2 = theGpio.provisionDigitalOutputPin(PIN_OUT_2, PinState.LOW);
-    private GpioPinDigitalInput in1 = theGpio.provisionDigitalInputPin(PIN_IN_1, PinPullResistance.PULL_UP);
-    private GpioPinDigitalInput in2 = theGpio.provisionDigitalInputPin(PIN_IN_2, PinPullResistance.PULL_UP);
-    private GpioPinDigitalInput in3 = theGpio.provisionDigitalInputPin(PIN_IN_3, PinPullResistance.PULL_UP);
-    private GpioPinDigitalInput in4 = theGpio.provisionDigitalInputPin(PIN_IN_4, PinPullResistance.PULL_UP);
-    private GpioPinDigitalInput in5 = theGpio.provisionDigitalInputPin(PIN_IN_5, PinPullResistance.PULL_UP);
-    private GpioPinDigitalInput in6 = theGpio.provisionDigitalInputPin(PIN_IN_6, PinPullResistance.PULL_UP);
+    /** The Constant KEYPAD. */
+    private static final char keypad[][] = {
+        { '1', '2', '3', 'A' },
+        { '4', '5', '6', 'B' }, { '7', '8', '9', 'C' },
+        { '*', '0', '#', 'D' } };
 
-    private GpioPinDigitalOutput theOutputs[] = {out1, out2};
-    private GpioPinDigitalInput theInputs[] = {in1, in2, in3, in4, in5, in6};
+    private static final Pin PIN_1_IN = RaspiPin.GPIO_15;
+    private static final Pin PIN_2_IN = RaspiPin.GPIO_16;
+    private static final Pin PIN_3_IN = RaspiPin.GPIO_01;
+    private static final Pin PIN_4_IN = RaspiPin.GPIO_04;
+    private static final Pin PIN_5_OUT = RaspiPin.GPIO_05;
+    private static final Pin PIN_6_OUT = RaspiPin.GPIO_06;
+    private static final Pin PIN_7_OUT = RaspiPin.GPIO_10;
+    private static final Pin PIN_8_OUT = RaspiPin.GPIO_11;
 
-    private int theFirstPin = 0;
-    private int theSecondPin = 0;
-    private RewardService rewardService;
-    private CameraService cameraService;
+    private final GpioPinDigitalInput thePin1 = theGpio.provisionDigitalInputPin(PIN_1_IN, PinPullResistance.PULL_UP);
+    private final GpioPinDigitalInput thePin2 = theGpio.provisionDigitalInputPin(PIN_2_IN, PinPullResistance.PULL_UP);
+    private final GpioPinDigitalInput thePin3 = theGpio.provisionDigitalInputPin(PIN_3_IN, PinPullResistance.PULL_UP);
+    private final GpioPinDigitalInput thePin4 = theGpio.provisionDigitalInputPin(PIN_4_IN, PinPullResistance.PULL_UP);
+    private final GpioPinDigitalOutput thePin5 = theGpio.provisionDigitalOutputPin(PIN_5_OUT);
+    private final GpioPinDigitalOutput thePin6 = theGpio.provisionDigitalOutputPin(PIN_6_OUT);
+    private final GpioPinDigitalOutput thePin7 = theGpio.provisionDigitalOutputPin(PIN_7_OUT);
+    private final GpioPinDigitalOutput thePin8 = theGpio.provisionDigitalOutputPin(PIN_8_OUT);
+    private final GpioPinDigitalOutput theOutputs[] = { thePin5, thePin6, thePin7, thePin8 };
 
-    @Autowired
-    public KeypadListener(RewardService rewardService, CameraService cameraService)
-    {
-        this.rewardService = rewardService;
-        this.cameraService = cameraService;
-        initMapping();
+    private GpioPinDigitalInput theInput;
+    private int theLin;
+    private int theCol;
 
-        new Thread(this::eventLoop);
+    /**
+     * Instantiates a new piezo keypad.
+     */
+    public KeypadListener() {
+        initListeners();
     }
 
     /**
-     * Event loop.
+     * Find output.
+     *
+     * Sets output lines to high and then to low one by one. Then the input line
+     * is tested. If its state is low, we have the right output line and
+     * therefore a mapping to a key on the keypad.
      */
-    private void eventLoop()
-    {
-        while (true)
-        {
-            // Just stay inside the loop, but do not consume all CPU
-            try
-            {
-                boolean myKeyPress = false;
-                GpioPinDigitalInput myInput = null;
-                int myInId = -1;
-
-                // all outputs low
-                for (int myO = 0; myO < theOutputs.length; myO++)
-                {
-                    theOutputs[myO].low();
-                }
-
-                while (!myKeyPress)
-                {
-                    // waiting for input
-                    for (int myI = 0; myI < theInputs.length; myI++)
-                    {
-                        if (theInputs[myI].isLow())
-                        {
-                            myInId = myI + 4;
-                            myInput = theInputs[myI];
-                            myKeyPress = true;
-                            System.out.print("In = " + myInId);
-                            break;
-                        }
-                    }
-
-                    Thread.sleep(100);
-                }
-
-                // now test the inputs by setting the outputs from high to low one by one
-                for (int myO = 0; myO < theOutputs.length; myO++)
-                {
-                    for (int myO2 = 0; myO2 < theOutputs.length; myO2++)
-                    {
-                        theOutputs[myO2].high();
-                    }
-
-                    theOutputs[myO].low();
-
-                    // input found?
-                    if (myInput.isLow())
-                    {
-                        System.out.println("Out = " + myO);
-
-                        theSecondPin = myInId;
-
-                        if (myO == 0)
-                        {
-                            theFirstPin = 1;
-                        }
-                        else
-                        {
-                            theFirstPin = 3;
-                        }
-
-                        checkPins();
-                        break;
-                    }
-                }
+    private void findOutput() {
+        // now test the inuts by setting the outputs from high to low
+        // one by one
+        for (int myO = 0; myO < theOutputs.length; myO++) {
+            for (final GpioPinDigitalOutput myTheOutput : theOutputs) {
+                myTheOutput.high();
             }
-            catch (InterruptedException myIE)
-            {
-                myIE.printStackTrace(System.err);
+
+            theOutputs[myO].low();
+
+            // input found?
+            if (theInput.isLow()) {
+                theCol = myO;
+                checkPins();
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                }
+                break;
             }
+        }
+
+        for (final GpioPinDigitalOutput myTheOutput : theOutputs) {
+            myTheOutput.low();
         }
     }
 
     /**
-     * Maps a pin combination on a keypad entry.
+     * Check pins.
+     *
+     * Determins the pressed key based on the activated GPIO pins.
      */
-    private void initMapping()
-    {
-        PINMAPPING.put("35", (int) '1');
-        PINMAPPING.put("36", (int) '2');
-        PINMAPPING.put("37", (int) '3');
-        PINMAPPING.put("38", (int) '4');
-        PINMAPPING.put("39", (int) '5');
-        PINMAPPING.put("14", (int) '6');
-        PINMAPPING.put("15", (int) '7');
-        PINMAPPING.put("16", (int) '8');
-        PINMAPPING.put("17", (int) '9');
-        PINMAPPING.put("18", (int) '*');
-        PINMAPPING.put("34", (int) '0');
-        PINMAPPING.put("19", (int) '#');
+    private synchronized void checkPins() {
+
+        notifyListeners(KEY,
+            this.keyPressed,
+            this.keyPressed = keypad[theLin - 1][theCol]);
+
+        System.out.println(keypad[theLin - 1][theCol]);
     }
 
-    private void checkPins()
-    {
-        System.out.println("Pin states = " + theFirstPin + " - " + theSecondPin);
+    /**
+     * Inits the listeners.
+     */
+    private void initListeners() {
+        thePin1.addListener((GpioPinListenerDigital) aEvent -> {
+            if (aEvent.getState() == PinState.LOW) {
+                theInput = thePin1;
+                theLin = 1;
+                findOutput();
+            }
+        });
+        thePin2.addListener(new GpioPinListenerDigital() {
+            @Override
+            public void handleGpioPinDigitalStateChangeEvent(
+                final GpioPinDigitalStateChangeEvent aEvent) {
+                if (aEvent.getState() == PinState.LOW) {
+                    theInput = thePin2;
+                    theLin = 2;
+                    findOutput();
+                }
+            }
+        });
+        thePin3.addListener(new GpioPinListenerDigital() {
+            @Override
+            public void handleGpioPinDigitalStateChangeEvent(
+                final GpioPinDigitalStateChangeEvent aEvent) {
+                if (aEvent.getState() == PinState.LOW) {
+                    theInput = thePin3;
+                    theLin = 3;
+                    findOutput();
+                }
+            }
+        });
+        thePin4.addListener((GpioPinListenerDigital) aEvent -> {
+            if (aEvent.getState() == PinState.LOW) {
+                theInput = thePin4;
+                theLin = 4;
+                findOutput();
+            }
+        });
+    }
 
-        if (theFirstPin != 0 && theSecondPin != 0)
-        {
-            int myInput = PINMAPPING.get("" + theFirstPin + theSecondPin);
-
-            System.out.println("Input read = " + (char) myInput);
-
-            theFirstPin = 0;
-            theSecondPin = 0;
+    private void notifyListeners(String property, char oldValue,
+        char newValue) {
+        for (PropertyChangeListener name : listener) {
+            name.propertyChange(new PropertyChangeEvent(this, property,
+                oldValue, newValue));
         }
+    }
+
+    public void addChangeListener(PropertyChangeListener newListener) {
+        listener.add(newListener);
+    }
     }
 }
