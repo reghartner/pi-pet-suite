@@ -2,27 +2,15 @@ package com.treatsboot.listeners;
 
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.treatsboot.services.RewardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 @Service
 public class KeypadListener
 {
-    /** The Constant PINMAPPING. */
-    private static final HashMap<String, Integer> PINMAPPING = new HashMap<String, Integer>();
-
     /** The gpio. */
     private final GpioController theGpio = GpioFactory.getInstance();
-
-    private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
-    public static final String KEY = "key";
-    private char keyPressed;
 
     /** The Constant KEYPAD. */
     private static final char keypad[][] = {
@@ -52,12 +40,16 @@ public class KeypadListener
     private GpioPinDigitalInput theInput;
     private int theLin;
     private int theCol;
+    private RewardService rewardService;
+
+    private int minutes = 0;
 
     /**
      * Instantiates a new piezo keypad.
      */
     @Autowired
-    public KeypadListener() {
+    public KeypadListener(RewardService rewardService) {
+        this.rewardService = rewardService;
         initListeners();
     }
 
@@ -81,7 +73,7 @@ public class KeypadListener
             // input found?
             if (theInput.isLow()) {
                 theCol = myO;
-                checkPins();
+                handleInput();
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
@@ -96,23 +88,30 @@ public class KeypadListener
     }
 
     /**
-     * Check pins.
-     *
-     * Determins the pressed key based on the activated GPIO pins.
+     * Handle the input from the keypad
      */
-    private synchronized void checkPins() {
-
-        notifyListeners(KEY,
-            this.keyPressed,
-            this.keyPressed = keypad[theLin - 1][theCol]);
-
-        System.out.println(keypad[theLin - 1][theCol]);
+    private synchronized void handleInput()
+    {
+        char pressed = keypad[theLin - 1][theCol];
+        if (Integer.valueOf(pressed) != null)
+        {
+            this.minutes = pressed;
+        }
+        if (String.valueOf(pressed).equals("*"))
+        {
+            try
+            {
+                rewardService.rewardForSilence(minutes, true);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
-    /**
-     * Inits the listeners.
-     */
-    private void initListeners() {
+    private void initListeners()
+    {
         thePin1.addListener((GpioPinListenerDigital) aEvent -> {
             if (aEvent.getState() == PinState.LOW) {
                 theInput = thePin1;
@@ -141,17 +140,5 @@ public class KeypadListener
                 findOutput();
             }
         });
-    }
-
-    private void notifyListeners(String property, char oldValue,
-        char newValue) {
-        for (PropertyChangeListener name : listener) {
-            name.propertyChange(new PropertyChangeEvent(this, property,
-                oldValue, newValue));
-        }
-    }
-
-    public void addChangeListener(PropertyChangeListener newListener) {
-        listener.add(newListener);
     }
 }
