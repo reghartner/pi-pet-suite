@@ -17,7 +17,8 @@ public class KeypadListener
     /** The Constant KEYPAD. */
     private static final char keypad[][] = {
         { '1', '2', '3', 'A' },
-        { '4', '5', '6', 'B' }, { '7', '8', '9', 'C' },
+        { '4', '5', '6', 'B' },
+        { '7', '8', '9', 'C' },
         { '*', '0', '#', 'D' } };
 
     private static final Pin PIN_1_IN = RaspiPin.GPIO_15;
@@ -99,7 +100,6 @@ public class KeypadListener
     private void handleInput()
     {
         char pressed = keypad[theLin - 1][theCol];
-        System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
 
         if (Integer.valueOf(pressed) != null
             && Integer.valueOf(pressed) >= 0
@@ -107,16 +107,22 @@ public class KeypadListener
         {
             this.minutes = Integer.valueOf(pressed);
         }
+
+        System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
+
         if (String.valueOf(pressed).equals("*"))
         {
+            System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
             try
             {
                 if(minutes == 0)
                 {
+                    System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
                     rewardService.dispenseAndRecord(true);
                 }
                 else
                 {
+                    System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
                     rewardService.rewardForSilence(minutes, true);
                 }
             }
