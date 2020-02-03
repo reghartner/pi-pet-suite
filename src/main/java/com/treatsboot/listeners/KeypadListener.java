@@ -93,7 +93,7 @@ public class KeypadListener
     private synchronized void handleInput()
     {
         char pressed = keypad[theLin - 1][theCol];
-        if (Integer.valueOf(pressed) != null)
+        if (Integer.valueOf(pressed) != null && Integer.valueOf(pressed) <= 9)
         {
             this.minutes = Integer.valueOf(pressed);
         }

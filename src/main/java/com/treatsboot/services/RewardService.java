@@ -2,6 +2,7 @@ package com.treatsboot.services;
 
 import com.treatsboot.repositories.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -65,6 +66,7 @@ public class RewardService
      * @return
      * @throws Exception
      */
+    @Async
     public void rewardForSilence(double minutes, boolean smallTreat) throws Exception
     {
         if (rewardInProgress)
