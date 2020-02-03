@@ -17,14 +17,14 @@ public class KeypadListener
     /** The gpio. */
     private final GpioController theGpio = GpioFactory.getInstance();
 
-    private static final Pin PIN_OUT_1 = RaspiPin.GPIO_15;
-    private static final Pin PIN_OUT_2 = RaspiPin.GPIO_16;
-    private static final Pin PIN_IN_1 = RaspiPin.GPIO_01;
-    private static final Pin PIN_IN_2 = RaspiPin.GPIO_04;
-    private static final Pin PIN_IN_3 = RaspiPin.GPIO_05;
-    private static final Pin PIN_IN_4 = RaspiPin.GPIO_06;
-    private static final Pin PIN_IN_5 = RaspiPin.GPIO_10;
-    private static final Pin PIN_IN_6 = RaspiPin.GPIO_11;
+    private static final Pin PIN_OUT_1 = RaspiPin.GPIO_11;
+    private static final Pin PIN_OUT_2 = RaspiPin.GPIO_10;
+    private static final Pin PIN_IN_1 = RaspiPin.GPIO_06;
+    private static final Pin PIN_IN_2 = RaspiPin.GPIO_05;
+    private static final Pin PIN_IN_3 = RaspiPin.GPIO_04;
+    private static final Pin PIN_IN_4 = RaspiPin.GPIO_01;
+    private static final Pin PIN_IN_5 = RaspiPin.GPIO_16;
+    private static final Pin PIN_IN_6 = RaspiPin.GPIO_15;
 
     private GpioPinDigitalOutput out1 = theGpio.provisionDigitalOutputPin(PIN_OUT_1, PinState.LOW);
     private GpioPinDigitalOutput out2 = theGpio.provisionDigitalOutputPin(PIN_OUT_2, PinState.LOW);
