@@ -101,35 +101,13 @@ public class KeypadListener
     {
         char pressed = keypad[theLin - 1][theCol];
 
-        if (Integer.valueOf(pressed) != null
-            && Integer.valueOf(pressed) >= 0
-            && Integer.valueOf(pressed) <= 9)
+        if (Integer.valueOf(pressed) != null)
         {
             this.minutes = Integer.valueOf(pressed);
             System.out.println(format("Integer pressed: %s, minutes: %s", pressed, minutes));
         }
 
         System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
-
-        if (String.valueOf(pressed).equals("*"))
-        {
-            try
-            {
-                System.out.println(format("* pressed: %s, minutes: %s", pressed, minutes));
-                if(minutes == 0)
-                {
-                    rewardService.dispenseAndRecord(true);
-                }
-                else
-                {
-                    rewardService.rewardForSilence(minutes, true);
-                }
-            }
-            catch (Exception e)
-            {
-                System.out.println(e);
-            }
-        }
     }
 
     private void initListeners()
