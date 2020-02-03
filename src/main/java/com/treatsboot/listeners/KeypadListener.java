@@ -99,7 +99,7 @@ public class KeypadListener
     private synchronized void handleInput()
     {
         char pressed = keypad[theLin - 1][theCol];
-        System.out.println(format("Key pressed: {}, minutes: {}", pressed, minutes));
+        System.out.println(format("Key pressed: %s, minutes: %s", pressed, minutes));
 
         if (Integer.valueOf(pressed) != null && Integer.valueOf(pressed) <= 9)
         {
