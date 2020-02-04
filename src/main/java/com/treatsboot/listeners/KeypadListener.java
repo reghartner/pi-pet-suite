@@ -110,16 +110,19 @@ public class KeypadListener
     {
         char pressed = keypad[theLin - 1][theCol];
         System.out.println(format("Pressed: %s", pressed));
-        int intInput = Character.getNumericValue(pressed);
         try
         {
-            if(intInput == 0)
+            if(Character.isDigit(pressed))
             {
-                rewardService.dispenseAndRecord(true);
-            }
-            else if (intInput > 0)
-            {
-                rewardService.rewardForSilence(intInput, true);
+                if (Character.getNumericValue(pressed) == 0)
+                {
+                    rewardService.dispenseAndRecord(true);
+                }
+                else
+                {
+                    rewardService.rewardForSilence(Character.getNumericValue(pressed), true);
+
+                }
             }
             else if (pressed == '*')
             {
