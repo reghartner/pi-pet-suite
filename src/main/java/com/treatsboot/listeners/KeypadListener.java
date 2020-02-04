@@ -120,39 +120,43 @@ public class KeypadListener
         }
         catch (Exception e)
         {
-            System.out.println(format("Encountered error processing input: %s, %2", pressed, e));
+            System.out.println(format("Encountered error processing input: %s, %s", pressed));
         }
     }
 
     private void initListeners()
     {
-        thePin1.addListener((GpioPinListenerDigital) aEvent -> {
-            System.out.println(format("Listening on Pin 1"));
-            if (aEvent.getState() == PinState.LOW) {
+        thePin1.addListener((GpioPinListenerDigital) aEvent ->
+        {
+            if (aEvent.getState() == PinState.LOW)
+            {
                 theInput = thePin1;
                 theLin = 1;
                 findOutput();
             }
         });
-        thePin2.addListener((GpioPinListenerDigital) aEvent -> {
-            System.out.println(format("Listening on Pin 2"));
-            if (aEvent.getState() == PinState.LOW) {
+        thePin2.addListener((GpioPinListenerDigital) aEvent ->
+        {
+            if (aEvent.getState() == PinState.LOW)
+            {
                 theInput = thePin2;
                 theLin = 2;
                 findOutput();
             }
         });
-        thePin3.addListener((GpioPinListenerDigital) aEvent -> {
-            System.out.println(format("Listening on Pin 3"));
-            if (aEvent.getState() == PinState.LOW) {
+        thePin3.addListener((GpioPinListenerDigital) aEvent ->
+        {
+            if (aEvent.getState() == PinState.LOW)
+            {
                 theInput = thePin3;
                 theLin = 3;
                 findOutput();
             }
         });
-        thePin4.addListener((GpioPinListenerDigital) aEvent -> {
-            System.out.println(format("Listening on Pin 4"));
-            if (aEvent.getState() == PinState.LOW) {
+        thePin4.addListener((GpioPinListenerDigital) aEvent ->
+        {
+            if (aEvent.getState() == PinState.LOW)
+            {
                 theInput = thePin4;
                 theLin = 4;
                 findOutput();
