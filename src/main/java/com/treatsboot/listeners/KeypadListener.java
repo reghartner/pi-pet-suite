@@ -11,9 +11,6 @@ import static java.lang.String.format;
 @Service
 public class KeypadListener
 {
-    /** The gpio. */
-    private final GpioController theGpio = GpioFactory.getInstance();
-
     /** The Constant KEYPAD. */
     private static final char keypad[][] = {
         { '1', '2', '3', 'A' },
@@ -30,28 +27,46 @@ public class KeypadListener
     private static final Pin PIN_7_OUT = RaspiPin.GPIO_10;
     private static final Pin PIN_8_OUT = RaspiPin.GPIO_11;
 
-    private final GpioPinDigitalInput thePin1 = theGpio.provisionDigitalInputPin(PIN_1_IN, PinPullResistance.PULL_UP);
-    private final GpioPinDigitalInput thePin2 = theGpio.provisionDigitalInputPin(PIN_2_IN, PinPullResistance.PULL_UP);
-    private final GpioPinDigitalInput thePin3 = theGpio.provisionDigitalInputPin(PIN_3_IN, PinPullResistance.PULL_UP);
-    private final GpioPinDigitalInput thePin4 = theGpio.provisionDigitalInputPin(PIN_4_IN, PinPullResistance.PULL_UP);
-    private final GpioPinDigitalOutput thePin5 = theGpio.provisionDigitalOutputPin(PIN_5_OUT);
-    private final GpioPinDigitalOutput thePin6 = theGpio.provisionDigitalOutputPin(PIN_6_OUT);
-    private final GpioPinDigitalOutput thePin7 = theGpio.provisionDigitalOutputPin(PIN_7_OUT);
-    private final GpioPinDigitalOutput thePin8 = theGpio.provisionDigitalOutputPin(PIN_8_OUT);
-    private final GpioPinDigitalOutput theOutputs[] = { thePin5, thePin6, thePin7, thePin8 };
+    private GpioPinDigitalInput thePin1;
+    private GpioPinDigitalInput thePin2;
+    private GpioPinDigitalInput thePin3;
+    private GpioPinDigitalInput thePin4;
+    private GpioPinDigitalOutput thePin5;
+    private GpioPinDigitalOutput thePin6;
+    private GpioPinDigitalOutput thePin7;
+    private GpioPinDigitalOutput thePin8;
+    private GpioPinDigitalOutput theOutputs[] = { thePin5, thePin6, thePin7, thePin8 };
 
-    private GpioPinDigitalInput theInput;
     private int theLin;
     private int theCol;
-    private RewardService rewardService;
+
+    private GpioPinDigitalInput theInput;
+
+    private final RewardService rewardService;
+    private final GpioController theGpio;
 
     /**
      * Instantiates a new piezo keypad.
      */
     @Autowired
-    public KeypadListener(RewardService rewardService) {
+    public KeypadListener(RewardService rewardService, GpioController theGpio)
+    {
         this.rewardService = rewardService;
+        this.theGpio = theGpio;
+        initPins();
         initListeners();
+    }
+
+    private void initPins()
+    {
+        thePin1 = theGpio.provisionDigitalInputPin(PIN_1_IN, PinPullResistance.PULL_UP);
+        thePin2 = theGpio.provisionDigitalInputPin(PIN_2_IN, PinPullResistance.PULL_UP);
+        thePin3 = theGpio.provisionDigitalInputPin(PIN_3_IN, PinPullResistance.PULL_UP);
+        thePin4 = theGpio.provisionDigitalInputPin(PIN_4_IN, PinPullResistance.PULL_UP);
+        thePin5 = theGpio.provisionDigitalOutputPin(PIN_5_OUT);
+        thePin6 = theGpio.provisionDigitalOutputPin(PIN_6_OUT);
+        thePin7 = theGpio.provisionDigitalOutputPin(PIN_7_OUT);
+        thePin8 = theGpio.provisionDigitalOutputPin(PIN_8_OUT);
     }
 
     /**
@@ -64,8 +79,10 @@ public class KeypadListener
     private void findOutput() {
         // now test the inputs by setting the outputs from high to low
         // one by one
-        for (int myO = 0; myO < theOutputs.length; myO++) {
-            for (final GpioPinDigitalOutput myTheOutput : theOutputs) {
+        for (int myO = 0; myO < theOutputs.length; myO++)
+        {
+            for (final GpioPinDigitalOutput myTheOutput : theOutputs)
+            {
                 myTheOutput.high();
             }
 
@@ -80,8 +97,8 @@ public class KeypadListener
                 {
                     Thread.sleep(500);
                 }
-                catch (InterruptedException e) {
-
+                catch (InterruptedException e)
+                {
                 }
             }
         }
@@ -98,10 +115,11 @@ public class KeypadListener
     private void handleInput()
     {
         char pressed = keypad[theLin - 1][theCol];
+        System.out.println(format("Pressed: %s", pressed));
         try
         {
             Integer intInput = Integer.parseInt("" + pressed);
-            System.out.println(format("Pressed: %s", intInput));
+            System.out.println(format("as int: %s", intInput));
             if(intInput == 0)
             {
                 rewardService.dispenseAndRecord(true);

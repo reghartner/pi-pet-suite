@@ -243,7 +243,7 @@ public class TreatDispenserService
             gpio.provisionDigitalOutputPin(RaspiPin.GPIO_00, "Pin B", LOW),
             gpio.provisionDigitalOutputPin(RaspiPin.GPIO_02, "Pin C", LOW),
             gpio.provisionDigitalOutputPin(RaspiPin.GPIO_03, "Pin D", LOW)
-        };
+        };;
 
         gpio.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
     }
