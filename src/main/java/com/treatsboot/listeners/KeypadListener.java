@@ -120,7 +120,7 @@ public class KeypadListener
         }
         catch (Exception e)
         {
-            System.out.println(format("Encountered error processing input: %s, %s", pressed));
+            System.out.println(format("Encountered error processing input: %s", pressed));
         }
     }
 
