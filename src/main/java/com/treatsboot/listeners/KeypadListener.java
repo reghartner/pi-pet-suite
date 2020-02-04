@@ -6,6 +6,8 @@ import com.treatsboot.services.RewardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 import static java.lang.String.format;
 
 @Service
@@ -35,7 +37,6 @@ public class KeypadListener
     private GpioPinDigitalOutput thePin6;
     private GpioPinDigitalOutput thePin7;
     private GpioPinDigitalOutput thePin8;
-    private GpioPinDigitalOutput theOutputs[] = { thePin5, thePin6, thePin7, thePin8 };
 
     private int theLin;
     private int theCol;
@@ -76,37 +77,24 @@ public class KeypadListener
      * is tested. If its state is low, we have the right output line and
      * therefore a mapping to a key on the keypad.
      */
-    private void findOutput() {
-        // now test the inputs by setting the outputs from high to low
-        // one by one
-        for (int myO = 0; myO < theOutputs.length; myO++)
+    private void findOutput()
+    {
+        // now test the inputs by setting the outputs from high to low one by one
+        GpioPinDigitalOutput outputs[] = { thePin5, thePin6, thePin7, thePin8 };
+        for (int myO = 0; myO < outputs.length; myO++)
         {
-            for (final GpioPinDigitalOutput myTheOutput : theOutputs)
-            {
-                myTheOutput.high();
-            }
-
-            theOutputs[myO].low();
+            Arrays.stream(outputs).forEach(output -> output.high());
+            outputs[myO].low();
 
             // input found?
             if (theInput.isLow())
             {
                 theCol = myO;
                 handleInput();
-                try
-                {
-                    Thread.sleep(500);
-                }
-                catch (InterruptedException e)
-                {
-                }
             }
         }
 
-        for (final GpioPinDigitalOutput myTheOutput : theOutputs)
-        {
-            myTheOutput.low();
-        }
+        Arrays.stream(outputs).forEach(output -> output.low());
     }
 
     /**
@@ -128,16 +116,18 @@ public class KeypadListener
             {
                 rewardService.rewardForSilence(intInput, true);
             }
+            Thread.sleep(500);
         }
         catch (Exception e)
         {
-            System.out.println(format("Not an integer: %s", pressed));
+            System.out.println(format("Encountered error processing input: %s, %2", pressed, e));
         }
     }
 
     private void initListeners()
     {
         thePin1.addListener((GpioPinListenerDigital) aEvent -> {
+            System.out.println(format("Listening on Pin 1"));
             if (aEvent.getState() == PinState.LOW) {
                 theInput = thePin1;
                 theLin = 1;
@@ -145,6 +135,7 @@ public class KeypadListener
             }
         });
         thePin2.addListener((GpioPinListenerDigital) aEvent -> {
+            System.out.println(format("Listening on Pin 2"));
             if (aEvent.getState() == PinState.LOW) {
                 theInput = thePin2;
                 theLin = 2;
@@ -152,6 +143,7 @@ public class KeypadListener
             }
         });
         thePin3.addListener((GpioPinListenerDigital) aEvent -> {
+            System.out.println(format("Listening on Pin 3"));
             if (aEvent.getState() == PinState.LOW) {
                 theInput = thePin3;
                 theLin = 3;
@@ -159,6 +151,7 @@ public class KeypadListener
             }
         });
         thePin4.addListener((GpioPinListenerDigital) aEvent -> {
+            System.out.println(format("Listening on Pin 4"));
             if (aEvent.getState() == PinState.LOW) {
                 theInput = thePin4;
                 theLin = 4;
