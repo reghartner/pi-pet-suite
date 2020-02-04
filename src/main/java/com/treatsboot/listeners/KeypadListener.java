@@ -2,6 +2,7 @@ package com.treatsboot.listeners;
 
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.treatsboot.repositories.EventRepository;
 import com.treatsboot.services.RewardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,15 +46,20 @@ public class KeypadListener
 
     private final RewardService rewardService;
     private final GpioController theGpio;
+    private EventRepository eventRepository;
 
     /**
      * Instantiates a new piezo keypad.
      */
     @Autowired
-    public KeypadListener(RewardService rewardService, GpioController theGpio)
+    public KeypadListener(
+        RewardService rewardService,
+        GpioController theGpio,
+        EventRepository eventRepository)
     {
         this.rewardService = rewardService;
         this.theGpio = theGpio;
+        this.eventRepository = eventRepository;
         initPins();
         initListeners();
     }
@@ -104,10 +110,9 @@ public class KeypadListener
     {
         char pressed = keypad[theLin - 1][theCol];
         System.out.println(format("Pressed: %s", pressed));
+        int intInput = Character.getNumericValue(pressed);
         try
         {
-            Integer intInput = Integer.parseInt("" + pressed);
-            System.out.println(format("as int: %s", intInput));
             if(intInput == 0)
             {
                 rewardService.dispenseAndRecord(true);
@@ -116,11 +121,15 @@ public class KeypadListener
             {
                 rewardService.rewardForSilence(intInput, true);
             }
+            else if (pressed == '*')
+            {
+                rewardService.kill();
+            }
             Thread.sleep(500);
         }
         catch (Exception e)
         {
-            System.out.println(format("Encountered error processing input: %s", pressed));
+            eventRepository.push("Hit error processing keypad input %s", e.getMessage());
         }
     }
 
