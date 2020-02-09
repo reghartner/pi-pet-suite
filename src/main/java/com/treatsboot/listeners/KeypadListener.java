@@ -49,7 +49,7 @@ public class KeypadListener
     private EventRepository eventRepository;
 
     /**
-     * Instantiates a new piezo keypad.
+     * Instantiates a new keypad.
      */
     @Autowired
     public KeypadListener(
@@ -61,7 +61,6 @@ public class KeypadListener
         this.theGpio = theGpio;
         this.eventRepository = eventRepository;
         initPins();
-        initListeners();
     }
 
     private void initPins()
@@ -74,6 +73,8 @@ public class KeypadListener
         thePin6 = theGpio.provisionDigitalOutputPin(PIN_6_OUT);
         thePin7 = theGpio.provisionDigitalOutputPin(PIN_7_OUT);
         thePin8 = theGpio.provisionDigitalOutputPin(PIN_8_OUT);
+
+        initListeners();
     }
 
     /**
@@ -117,6 +118,7 @@ public class KeypadListener
                 if (Character.getNumericValue(pressed) == 0)
                 {
                     rewardService.dispenseAndRecord(true);
+                    eventRepository.push("Keypress has triggered reward");
                 }
                 else
                 {

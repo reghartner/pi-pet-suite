@@ -4,6 +4,7 @@ import com.pi4j.io.gpio.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import static java.lang.String.format;
 public class TreatDispenserService
 {
     private static final Logger LOG = LoggerFactory.getLogger(TreatDispenserService.class);
+    private GpioController gpio;
 
     /**
      * The stepping method to be used by the motor.
@@ -95,38 +97,14 @@ public class TreatDispenserService
 
     private static boolean rotateClockwise = true;
 
-    public TreatDispenserService()
+    @Autowired
+    public TreatDispenserService(GpioController gpio)
     {
+        this.gpio = gpio;
     }
 
     /**
-     * Performs a demo of the various methods to move the motor.
-     */
-    public void performDemo()
-    {
-        LOG.info("1/2 rotation clockwise in wave drive method... ");
-        this.steppingMethod = SteppingMethod.WAVE_DRIVE;
-        angleRotation(180);
-        LOG.info("Done.");
-
-        LOG.info("1/2 rotation counterclockwise in full step method... ");
-        this.steppingMethod = SteppingMethod.FULL_STEP;
-        angleRotation(-180);
-        LOG.info("Done.");
-
-        LOG.info("1/2 rotation clockwise in half step method... ");
-        this.steppingMethod = SteppingMethod.HALF_STEP;
-        angleRotation(180);
-        LOG.info("Done.");
-
-        LOG.info("1/2 rotation counterclockwise in full step method... ");
-        this.steppingMethod = SteppingMethod.FULL_STEP;
-        angleRotation(-180);
-        LOG.info("Done.");
-    }
-
-    /**
-     * Rotates the motor 90 degrees alternating the direction every time. Note that the step angle
+     * Rotates the motor alternating the direction every time. Note that the step angle
      * of the motor is 0.09 degrees in half step method.
      */
     @Async
@@ -163,7 +141,8 @@ public class TreatDispenserService
      */
     private void angleRotation(float angle) {
         int steps;
-        switch (steppingMethod) {
+        switch (steppingMethod)
+        {
             case HALF_STEP:
                 steps = (int) (512 * 8 * angle) / 360;
                 break;
@@ -182,7 +161,6 @@ public class TreatDispenserService
      */
     private void step(int noOfSteps)
     {
-        final GpioController gpio = GpioFactory.getInstance();
         provisionPins(gpio);
 
         if (noOfSteps > 0)
@@ -203,7 +181,6 @@ public class TreatDispenserService
         }
 
         unProvisionPins(gpio);
-        gpio.shutdown();
     }
 
     /**
